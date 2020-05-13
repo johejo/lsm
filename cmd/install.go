@@ -26,7 +26,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/johejo/lsm/lsm"
+	"github.com/johejo/lsm/app"
 )
 
 // installCmd represents the install command
@@ -41,7 +41,7 @@ var installCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		a, err := lsm.NewApp("")
+		a, err := app.New("")
 		if err != nil {
 			return err
 		}

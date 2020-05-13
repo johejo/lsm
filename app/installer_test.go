@@ -1,4 +1,4 @@
-package lsm
+package app
 
 import (
 	"context"
@@ -113,7 +113,7 @@ func newInstallerTestHelper(t *testing.T, name string) *installerTestHelper {
 			t.Fatal(err)
 		}
 	})
-	a, err := NewApp(tmp)
+	a, err := New(tmp)
 	if err != nil {
 		t.Fatal(err)
 	}

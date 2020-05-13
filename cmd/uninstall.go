@@ -24,7 +24,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/johejo/lsm/lsm"
+	"github.com/johejo/lsm/app"
 )
 
 // uninstallCmd represents the uninstall command
@@ -32,7 +32,7 @@ var uninstallCmd = &cobra.Command{
 	Use:   "uninstall",
 	Short: "uninstall specified language server",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		a, err := lsm.NewApp("")
+		a, err := app.New("")
 		if err != nil {
 			return err
 		}

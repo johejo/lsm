@@ -1,4 +1,4 @@
-package lsm
+package app
 
 import (
 	"context"

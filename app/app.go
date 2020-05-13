@@ -1,4 +1,4 @@
-package lsm
+package app
 
 import (
 	"bufio"
@@ -8,14 +8,10 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-
-	"github.com/mholt/archiver/v3"
-	"github.com/schollz/progressbar/v3"
 )
 
 var isWindows bool
@@ -34,22 +30,28 @@ type App struct {
 	out        io.Writer
 }
 
-func NewApp(baseDir string) (*App, error) {
+func New(baseDir string) (*App, error) {
 	if baseDir == "" {
 		switch runtime.GOOS {
 		case "linux", "darwin":
 			xdgDataHome := os.Getenv("XDG_DATA_HOME")
 			if xdgDataHome != "" {
-				baseDir = filepath.Join(xdgDataHome, "lsm", "servers")
+				baseDir = filepath.Join(xdgDataHome, "app", "servers")
 				break
 			}
 			home, err := os.UserHomeDir()
 			if err != nil {
 				return nil, err
 			}
-			baseDir = filepath.Join(home, ".local", "share", "lsm", "servers")
+			baseDir = filepath.Join(home, ".local", "share", "app", "servers")
 		case "windows":
 			baseDir = filepath.Clean(`%LOCALAPPDATA%\lsm\servers`)
+		}
+	} else {
+		var err error
+		baseDir, err = filepath.Abs(filepath.Clean(baseDir))
+		if err != nil {
+			return nil, err
 		}
 	}
 	return &App{
@@ -161,46 +163,4 @@ func isExecutable(mode os.FileMode) bool {
 		return true
 	}
 	return mode&0100 != 0
-}
-
-type Installer interface {
-	Name() string
-	BinName() string
-	Dir() string
-	Requires() []string
-	Version() string
-	Install(ctx context.Context) error
-}
-
-type baseInstaller struct {
-	dir string
-}
-
-func (i *baseInstaller) Dir() string {
-	return i.dir
-}
-
-func (i *baseInstaller) Download(req *http.Request, dst string) error {
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	f, err := os.Create(filepath.Clean(dst))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	bar := progressbar.DefaultBytes(resp.ContentLength, "downloading")
-	if _, err := io.Copy(io.MultiWriter(f, bar), resp.Body); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (i *baseInstaller) Extract(ctx context.Context, path string) error {
-	if err := archiver.Unarchive(path, i.Dir()); err != nil {
-		return err
-	}
-	return nil
 }

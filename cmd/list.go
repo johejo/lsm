@@ -24,7 +24,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/johejo/lsm/lsm"
+	"github.com/johejo/lsm/app"
 )
 
 // listCmd represents the list command
@@ -32,7 +32,7 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "show language server list",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		a, err := lsm.NewApp("")
+		a, err := app.New("")
 		if err != nil {
 			return err
 		}
