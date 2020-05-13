@@ -22,6 +22,8 @@ func TestNpmInstaller(t *testing.T) {
 		"bash-language-server",
 		"yaml-language-server",
 		"vscode-json-languageserver",
+		"vscode-css-languageserver",
+		"vscode-html-languageserver",
 	}
 	for _, tt := range tests {
 		t.Run(tt, func(t *testing.T) {

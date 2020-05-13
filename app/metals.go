@@ -15,7 +15,9 @@ type MetalsInstaller struct {
 var _ Installer = (*MetalsInstaller)(nil)
 
 func NewMetalsInstaller(baseDir string) *MetalsInstaller {
-	return &MetalsInstaller{baseInstaller{dir: filepath.Join(baseDir, "metals")}}
+	var i MetalsInstaller
+	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	return &i
 }
 
 func (i *MetalsInstaller) Name() string {

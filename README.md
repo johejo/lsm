@@ -16,7 +16,7 @@ LSM aims to be a simple and cross platform installation manager for Language Ser
 ## Notice
 Windows support is still incomplete.
 
-## Place of installation
+## Language Server Destination
 
 ### macOS, Linux
 
@@ -77,9 +77,12 @@ lsm list
 - [kotlin-language-server](https://github.com/fwcd/kotlin-language-server)
 - [yaml-language-sever](https://github.com/redhat-developer/yaml-language-server/)
 - [vscode-json-languagesever](https://github.com/vscode-langservers/vscode-json-languageserver)
+- [vscode-css-languagesever](https://github.com/vscode-langservers/vscode-css-languageserver)
+- [vscode-html-languagesever](https://github.com/vscode-langservers/vscode-html-languageserver)
 - [dockerfile-language-server-nodejs](https://github.com/rcjsuen/dockerfile-language-server-nodejs)
 - [metals](https://scalameta.org/metals/)
 - [rust-analyzer](https://rust-analyzer.github.io/)
+- [efm-langserver](https://github.com/mattn/efm-langserver)
 
 We plan to add more Language Servers.<br>
 If you want to add a new Language Server, please create a PR.<br>
