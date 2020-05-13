@@ -113,6 +113,9 @@ func (a *App) Uninstall(ctx context.Context, name string) error {
 }
 
 func (a *App) List(ctx context.Context) error {
+	if err := os.MkdirAll(a.baseDir, 0777); err != nil {
+		return err
+	}
 	dirs, err := ioutil.ReadDir(a.baseDir)
 	if err != nil {
 		return err
