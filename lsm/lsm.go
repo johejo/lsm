@@ -14,8 +14,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/cheggaaa/pb/v3"
 	"github.com/mholt/archiver/v3"
+	"github.com/schollz/progressbar/v3"
 )
 
 var isWindows bool
@@ -191,10 +191,8 @@ func (i *baseInstaller) Download(req *http.Request, dst string) error {
 		return err
 	}
 	defer f.Close()
-	bar := pb.Full.Start64(resp.ContentLength)
-	defer bar.Finish()
-	pr := bar.NewProxyReader(resp.Body)
-	if _, err := io.Copy(f, pr); err != nil {
+	bar := progressbar.DefaultBytes(resp.ContentLength, "downloading")
+	if _, err := io.Copy(io.MultiWriter(f, bar), resp.Body); err != nil {
 		return err
 	}
 	return nil
