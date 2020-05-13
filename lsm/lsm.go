@@ -14,7 +14,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/schollz/progressbar/v3"
+	"github.com/cheggaaa/pb/v3"
+	"github.com/mholt/archiver/v3"
 )
 
 var isWindows bool
@@ -64,6 +65,7 @@ func NewApp(baseDir string) (*App, error) {
 			"metals":                            NewMetalsInstaller(baseDir),
 			"kotlin-language-server":            NewKotlinLSInstaller(baseDir),
 			"rust-analyzer":                     NewRustAnalyzerInstaller(baseDir),
+			"efm-langserver":                    NewEfmLSInstaller(baseDir),
 		},
 		out: os.Stdout,
 	}, nil
@@ -178,7 +180,7 @@ func (i *baseInstaller) Dir() string {
 	return i.dir
 }
 
-func (i *baseInstaller) download(req *http.Request, dst string) error {
+func (i *baseInstaller) Download(req *http.Request, dst string) error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
@@ -189,8 +191,17 @@ func (i *baseInstaller) download(req *http.Request, dst string) error {
 		return err
 	}
 	defer f.Close()
-	bar := progressbar.DefaultBytes(resp.ContentLength, "downloading")
-	if _, err := io.Copy(io.MultiWriter(f, bar), resp.Body); err != nil {
+	bar := pb.Full.Start64(resp.ContentLength)
+	defer bar.Finish()
+	pr := bar.NewProxyReader(resp.Body)
+	if _, err := io.Copy(f, pr); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *baseInstaller) Extract(ctx context.Context, path string) error {
+	if err := archiver.Unarchive(path, i.Dir()); err != nil {
 		return err
 	}
 	return nil

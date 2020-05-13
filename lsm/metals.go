@@ -43,7 +43,7 @@ func (i *MetalsInstaller) Install(ctx context.Context) error {
 		return err
 	}
 	coursier := filepath.Join(i.Dir(), "coursier")
-	if err := i.download(req, coursier); err != nil {
+	if err := i.Download(req, coursier); err != nil {
 		return err
 	}
 	if isWindows {
@@ -52,7 +52,7 @@ func (i *MetalsInstaller) Install(ctx context.Context) error {
 			return err
 		}
 		coursierBat := filepath.Join(i.Dir(), "coursier.bat")
-		if err := i.download(req, coursierBat); err != nil {
+		if err := i.Download(req, coursierBat); err != nil {
 			return err
 		}
 	}

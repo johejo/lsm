@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"github.com/koron-go/zipx"
 )
 
 type KotlinLSInstaller struct {
@@ -17,9 +15,9 @@ type KotlinLSInstaller struct {
 
 var _ Installer = (*KotlinLSInstaller)(nil)
 
-func NewKotlinLSInstaller(dir string) *KotlinLSInstaller {
+func NewKotlinLSInstaller(baseDir string) *KotlinLSInstaller {
 	var i KotlinLSInstaller
-	i.baseInstaller = baseInstaller{dir: filepath.Join(dir, i.Name())}
+	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
 	return &i
 }
 
@@ -48,18 +46,18 @@ func (i *KotlinLSInstaller) Install(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	zippped := filepath.Join(i.Dir(), "server.zip")
-	if err := i.download(req, zippped); err != nil {
+	archive := filepath.Join(i.Dir(), "server.zip")
+	if err := i.Download(req, archive); err != nil {
+		return err
+	}
+	if err := i.Extract(ctx, archive); err != nil {
 		return err
 	}
 	defer func() {
-		if err := os.Remove(zippped); err != nil {
+		if err := os.Remove(archive); err != nil {
 			log.Println(err)
 		}
 	}()
-	if err := zipx.New().ExtractFile(ctx, zippped, zipx.Dir(i.Dir())); err != nil {
-		return err
-	}
 	src := filepath.Join("server", "bin", i.BinName())
 	dst := filepath.Join(i.Dir(), i.BinName())
 	if err := os.Symlink(src, dst); err != nil {

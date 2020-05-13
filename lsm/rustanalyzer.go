@@ -60,7 +60,7 @@ func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {
 		return err
 	}
 	bin := filepath.Join(i.Dir(), i.BinName())
-	if err := i.download(req, bin); err != nil {
+	if err := i.Download(req, bin); err != nil {
 		return err
 	}
 	// TODO Does this work on Windows?

@@ -50,6 +50,12 @@ func TestRustAnalyzerInstaller(t *testing.T) {
 	h.Run(context.Background())
 }
 
+func TestEfmLSInstaller(t *testing.T) {
+	t.Parallel()
+	h := newInstallerTestHelper(t, "efm-langserver")
+	h.Run(context.Background())
+}
+
 type installerTestHelper struct {
 	t    *testing.T
 	a    *App
