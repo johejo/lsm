@@ -84,7 +84,7 @@ func (a *App) Install(ctx context.Context, name string) error {
 	if err := i.Install(ctx); err != nil {
 		return err
 	}
-	log.Printf("%s %s is installed into %s", name, i.Version(), i.Dir())
+	log.Printf("%s %s installed into %s", name, i.Version(), i.Dir())
 	return nil
 }
 

@@ -25,6 +25,7 @@ func TestNpmInstaller(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt, func(t *testing.T) {
+			t.Parallel()
 			h := newInstallerTestHelper(t, tt)
 			h.Run(context.Background())
 		})
@@ -32,16 +33,19 @@ func TestNpmInstaller(t *testing.T) {
 }
 
 func TestMetalsInstaller(t *testing.T) {
+	t.Parallel()
 	h := newInstallerTestHelper(t, "metals")
 	h.Run(context.Background())
 }
 
 func TestKotlinLSInstaller(t *testing.T) {
+	t.Parallel()
 	h := newInstallerTestHelper(t, "kotlin-language-server")
 	h.Run(context.Background())
 }
 
 func TestRustAnalyzerInstaller(t *testing.T) {
+	t.Parallel()
 	h := newInstallerTestHelper(t, "rust-analyzer")
 	h.Run(context.Background())
 }
@@ -94,14 +98,19 @@ func newInstallerTestHelper(t *testing.T, name string) *installerTestHelper {
 	if testing.Short() {
 		t.Skip()
 	}
-	baseDir, err := filepath.Abs(filepath.Join("testdata", "lsm", "servers"))
+	tmp, err := ioutil.TempDir("", "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := NewApp(baseDir)
+	t.Cleanup(func() {
+		if err := os.RemoveAll(tmp); err != nil {
+			t.Fatal(err)
+		}
+	})
+	a, err := NewApp(tmp)
 	if err != nil {
 		t.Fatal(err)
 	}
-	a.baseDir = baseDir
+	a.baseDir = tmp
 	return &installerTestHelper{t: t, a: a, name: name}
 }

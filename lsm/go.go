@@ -12,16 +12,19 @@ type GoInstaller struct {
 
 	goGetURL string
 	binName  string
+	env      []string
 }
 
 var _ Installer = (*GoInstaller)(nil)
 
 func NewGoInstaller(baseDir, goGetURL, binName string) *GoInstaller {
-	return &GoInstaller{
+	i := &GoInstaller{
 		baseInstaller: baseInstaller{dir: filepath.Join(baseDir, binName)},
 		goGetURL:      goGetURL,
 		binName:       binName,
 	}
+	i.env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir())
+	return i
 }
 
 func (i *GoInstaller) Name() string {
@@ -36,23 +39,25 @@ func (i *GoInstaller) Version() string {
 	return "latest"
 }
 
+func (i *GoInstaller) cmdRun(ctx context.Context, name string, args ...string) error {
+	cmd := exec.CommandContext(ctx, name, args...)
+	cmd.Dir = i.Dir()
+	cmd.Env = i.env
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (i *GoInstaller) Install(ctx context.Context) error {
-	cmd := exec.CommandContext(ctx, "go", "get", i.goGetURL)
-	cmd.Env = append(os.Environ(), "GOPATH="+i.dir, "GO111MODULE=on", "GOBIN="+i.dir)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	if err := i.cmdRun(ctx, "go", "get", i.goGetURL); err != nil {
 		return err
 	}
-
-	cmd = exec.CommandContext(ctx, "go", "clean", "-modcache")
-	cmd.Env = append(os.Environ(), "GOPATH="+i.dir, "GO111MODULE=on")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	if err := i.cmdRun(ctx, "go", "clean", "-modcache"); err != nil {
 		return err
 	}
-
 	if err := os.RemoveAll(filepath.Join(i.dir, "src")); err != nil {
 		return err
 	}
