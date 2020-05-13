@@ -28,6 +28,9 @@ func (i *KotlinLSInstaller) Name() string {
 }
 
 func (i *KotlinLSInstaller) BinName() string {
+	if isWindows {
+		return i.Name() + ".bat"
+	}
 	return i.Name()
 }
 

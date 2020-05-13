@@ -17,6 +17,16 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
+var isWindows bool
+
+func init() {
+	if runtime.GOOS == "windows" {
+		isWindows = true
+	} else {
+		isWindows = false
+	}
+}
+
 type App struct {
 	installers map[string]Installer
 	baseDir    string
@@ -106,11 +116,11 @@ func (a *App) List(ctx context.Context) error {
 		return err
 	}
 	var buf strings.Builder
-	for name := range a.installers {
+	for _, i := range a.installers {
 		found := false
 		for _, d := range dirs {
-			if d.IsDir() && d.Name() == name {
-				bin := filepath.Join(a.baseDir, name, name) // e.g. ~/.local/share/lsm/servers/<SERVER_NAME>/<SERVER_NAME>
+			if d.IsDir() && d.Name() == i.Name() {
+				bin := filepath.Join(a.baseDir, i.Name(), i.BinName())
 				info, err := os.Stat(bin)
 				if err != nil {
 					found = false
@@ -123,9 +133,9 @@ func (a *App) List(ctx context.Context) error {
 			}
 		}
 		if found {
-			buf.WriteString(fmt.Sprintf("%s is installed\n", name))
+			buf.WriteString(fmt.Sprintf("%s is installed\n", i.Name()))
 		} else {
-			buf.WriteString(fmt.Sprintf("%s is not installed\n", name))
+			buf.WriteString(fmt.Sprintf("%s is not installed\n", i.Name()))
 		}
 	}
 	if _, err := io.WriteString(os.Stdout, buf.String()); err != nil {

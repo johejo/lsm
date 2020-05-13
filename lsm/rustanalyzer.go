@@ -27,6 +27,9 @@ func (i *RustAnalyzerInstaller) Name() string {
 }
 
 func (i *RustAnalyzerInstaller) BinName() string {
+	if isWindows {
+		return i.Name() + ".exe"
+	}
 	return i.Name()
 }
 
@@ -39,19 +42,19 @@ func (i *RustAnalyzerInstaller) Version() string {
 }
 
 func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {
-	var binSuffix string
+	var suffix string
 	switch runtime.GOOS {
 	case "darwin":
-		binSuffix = "mac"
+		suffix = "mac"
 	case "linux":
-		binSuffix = "linux"
+		suffix = "linux"
 	case "windows":
-		binSuffix = "windows.exe"
+		suffix = "windows.exe"
 	default:
 		return errors.New(runtime.GOOS + " is not supported")
 	}
 
-	u := fmt.Sprintf("https://github.com/rust-analyzer/rust-analyzer/releases/download/%s/rust-analyzer-%s", i.Version(), binSuffix)
+	u := fmt.Sprintf("https://github.com/rust-analyzer/rust-analyzer/releases/download/%s/rust-analyzer-%s", i.Version(), suffix)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return err
