@@ -32,6 +32,9 @@ func (i *GoInstaller) Name() string {
 }
 
 func (i *GoInstaller) BinName() string {
+	if isWindows {
+		return i.binName + ".exe"
+	}
 	return i.binName
 }
 
