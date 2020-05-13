@@ -63,7 +63,7 @@ func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {
 	if err := i.download(req, bin); err != nil {
 		return err
 	}
-	// TODO Is this work on Windows?
+	// TODO Does this work on Windows?
 	if err := os.Chmod(bin, 0777); err != nil {
 		return err
 	}

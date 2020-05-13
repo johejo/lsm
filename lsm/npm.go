@@ -52,7 +52,7 @@ func (i *NpmInstaller) Install(ctx context.Context) error {
 		return err
 	}
 
-	cmd := exec.CommandContext(ctx, "npm", "install", i.moduleName)
+	cmd := exec.CommandContext(ctx, "npm", "install", i.Name())
 	cmd.Dir = i.Dir()
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

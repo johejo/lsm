@@ -1,6 +1,7 @@
 package lsm
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -12,7 +13,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 
 	"github.com/schollz/progressbar/v3"
 )
@@ -30,6 +30,7 @@ func init() {
 type App struct {
 	installers map[string]Installer
 	baseDir    string
+	out        io.Writer
 }
 
 func NewApp(baseDir string) (*App, error) {
@@ -64,6 +65,7 @@ func NewApp(baseDir string) (*App, error) {
 			"kotlin-language-server":            NewKotlinLSInstaller(baseDir),
 			"rust-analyzer":                     NewRustAnalyzerInstaller(baseDir),
 		},
+		out: os.Stdout,
 	}, nil
 }
 
@@ -115,7 +117,7 @@ func (a *App) List(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	var buf strings.Builder
+	buf := bufio.NewWriter(a.out)
 	for _, i := range a.installers {
 		found := false
 		for _, d := range dirs {
@@ -132,13 +134,17 @@ func (a *App) List(ctx context.Context) error {
 				}
 			}
 		}
+		var msg string
 		if found {
-			buf.WriteString(fmt.Sprintf("%s is installed\n", i.Name()))
+			msg = fmt.Sprintf("%s is installed\n", i.Name())
 		} else {
-			buf.WriteString(fmt.Sprintf("%s is not installed\n", i.Name()))
+			msg = fmt.Sprintf("%s is not installed\n", i.Name())
+		}
+		if _, err := buf.WriteString(msg); err != nil {
+			return err
 		}
 	}
-	if _, err := io.WriteString(os.Stdout, buf.String()); err != nil {
+	if err := buf.Flush(); err != nil {
 		return err
 	}
 	return nil

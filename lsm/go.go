@@ -10,17 +10,17 @@ import (
 type GoInstaller struct {
 	baseInstaller
 
-	goGetURL string
-	binName  string
-	env      []string
+	goPath  string
+	binName string
+	env     []string
 }
 
 var _ Installer = (*GoInstaller)(nil)
 
-func NewGoInstaller(baseDir, goGetURL, binName string) *GoInstaller {
+func NewGoInstaller(baseDir, goPath, binName string) *GoInstaller {
 	i := &GoInstaller{
 		baseInstaller: baseInstaller{dir: filepath.Join(baseDir, binName)},
-		goGetURL:      goGetURL,
+		goPath:        goPath,
 		binName:       binName,
 	}
 	i.env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir())
@@ -55,13 +55,13 @@ func (i *GoInstaller) cmdRun(ctx context.Context, name string, args ...string) e
 }
 
 func (i *GoInstaller) Install(ctx context.Context) error {
-	if err := i.cmdRun(ctx, "go", "get", i.goGetURL); err != nil {
+	if err := i.cmdRun(ctx, "go", "get", i.goPath); err != nil {
 		return err
 	}
 	if err := i.cmdRun(ctx, "go", "clean", "-modcache"); err != nil {
 		return err
 	}
-	if err := os.RemoveAll(filepath.Join(i.dir, "src")); err != nil {
+	if err := os.RemoveAll(filepath.Join(i.Dir(), "src")); err != nil {
 		return err
 	}
 	return nil
