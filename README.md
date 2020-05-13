@@ -1,5 +1,8 @@
 # Language Server Manager (LSM)
 
+[![ci](https://github.com/johejo/lsm/workflows/ci/badge.svg)](https://github.com/johejo/lsm/actions?query=workflow%3Aci)
+[![codecov](https://codecov.io/gh/johejo/lsm/branch/master/graph/badge.svg)](https://codecov.io/gh/johejo/lsm)
+
 ## Motivation
 
 Language Server is difficult to set up and is tightly coupled with each editor plugin.<br>
