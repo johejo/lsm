@@ -145,6 +145,10 @@ func (a *App) List(ctx context.Context) error {
 }
 
 func isExecutable(mode os.FileMode) bool {
+	// FIXME
+	if isWindows {
+		return true
+	}
 	return mode&0100 != 0
 }
 
