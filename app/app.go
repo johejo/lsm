@@ -36,14 +36,14 @@ func New(baseDir string) (*App, error) {
 		case "linux", "darwin":
 			xdgDataHome := os.Getenv("XDG_DATA_HOME")
 			if xdgDataHome != "" {
-				baseDir = filepath.Join(xdgDataHome, "app", "servers")
+				baseDir = filepath.Join(xdgDataHome, "lsm", "servers")
 				break
 			}
 			home, err := os.UserHomeDir()
 			if err != nil {
 				return nil, err
 			}
-			baseDir = filepath.Join(home, ".local", "share", "app", "servers")
+			baseDir = filepath.Join(home, ".local", "share", "lsm", "servers")
 		case "windows":
 			baseDir = filepath.Clean(`%LOCALAPPDATA%\lsm\servers`)
 		}
