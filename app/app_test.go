@@ -12,6 +12,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNew_unix_home(t *testing.T) {
+	if isWindows {
+		t.Skip()
+	}
+	p, err := filepath.Abs("./testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Setenv("HOME", p); err != nil {
+		t.Fatal(err)
+	}
+	a, err := New("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, filepath.Join(p, ".local", "share", "lsm", "servers"), a.baseDir)
+}
+
 func TestNew_xdgDataHome(t *testing.T) {
 	if isWindows {
 		t.Skip()
