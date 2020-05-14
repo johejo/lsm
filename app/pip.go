@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -21,7 +20,7 @@ type PipInstaller struct {
 var _ Installer = (*PipInstaller)(nil)
 
 func isSupportedPython(v string) (bool, error) {
-	min, err := semver.NewVersion("3.5")
+	drop, err := semver.NewVersion("3.4.10")
 	if err != nil {
 		return false, err
 	}
@@ -29,7 +28,7 @@ func isSupportedPython(v string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return version.GreaterThan(min), nil
+	return version.GreaterThan(drop), nil
 }
 
 func lookPython3() (string, error) {
@@ -41,7 +40,7 @@ func lookPython3() (string, error) {
 
 func lookPython() (string, error) {
 	if _, err := exec.LookPath("python"); err != nil {
-		return "", errors.New("no python found")
+		return "", err
 	}
 	_out, err := exec.Command("python", "--version").Output()
 	if err != nil {
