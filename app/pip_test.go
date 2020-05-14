@@ -7,17 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_lookPython(t *testing.T) {
-	baseDir := filepath.Clean("./testdata")
-	i := NewPipInstaller(baseDir, "python-language-server", "pyls")
-	assert.Equal(t, i.python, "python")
-}
-
-func Test_lookPython3(t *testing.T) {
+func TestNewPipInstaller_lookPython(t *testing.T) {
+	var want string
 	if isWindows {
-		t.Skip()
+		want = "python"
+	} else {
+		want = "python3"
 	}
 	baseDir := filepath.Clean("./testdata")
 	i := NewPipInstaller(baseDir, "python-language-server", "pyls")
-	assert.Equal(t, i.python, "python3")
+	assert.Equal(t, want, i.python)
 }
