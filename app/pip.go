@@ -65,12 +65,14 @@ func lookPython() (string, error) {
 func NewPipInstaller(baseDir, moduleName, binName string) *PipInstaller {
 	i := &PipInstaller{moduleName: moduleName, binName: binName}
 	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
-	python, err := lookPython3()
-	if err == nil {
-		i.python = python
-		return i
+	if !isWindows {
+		python, err := lookPython3()
+		if err == nil {
+			i.python = python
+			return i
+		}
 	}
-	python, err = lookPython()
+	python, err := lookPython()
 	if err != nil {
 		panic(err) //FIXME
 	}
