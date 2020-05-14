@@ -12,18 +12,16 @@ type GoInstaller struct {
 
 	goPath  string
 	binName string
-	env     []string
 }
 
 var _ Installer = (*GoInstaller)(nil)
 
 func NewGoInstaller(baseDir, goPath, binName string) *GoInstaller {
 	i := &GoInstaller{
-		baseInstaller: baseInstaller{dir: filepath.Join(baseDir, binName)},
-		goPath:        goPath,
-		binName:       binName,
+		goPath:  goPath,
+		binName: binName,
 	}
-	i.env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir())
+	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
 	return i
 }
 
@@ -45,7 +43,7 @@ func (i *GoInstaller) Version() string {
 func (i *GoInstaller) cmdRun(ctx context.Context, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = i.Dir()
-	cmd.Env = i.env
+	cmd.Env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

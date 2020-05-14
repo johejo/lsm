@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/mholt/archiver/v3"
@@ -41,6 +42,17 @@ func (i *baseInstaller) Download(req *http.Request, dst string) error {
 	defer f.Close()
 	bar := progressbar.DefaultBytes(resp.ContentLength, "downloading")
 	if _, err := io.Copy(io.MultiWriter(f, bar), resp.Body); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *baseInstaller) CmdRun(ctx context.Context, name string, args ...string) error {
+	cmd := exec.CommandContext(ctx, name, args...)
+	cmd.Dir = i.Dir()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		return err
 	}
 	return nil

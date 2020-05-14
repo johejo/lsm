@@ -3,6 +3,7 @@ module github.com/johejo/lsm
 go 1.14
 
 require (
+	github.com/Masterminds/semver/v3 v3.1.0
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/schollz/progressbar/v3 v3.3.3
 	github.com/spf13/cobra v1.0.0

@@ -58,6 +58,12 @@ func TestEfmLSInstaller(t *testing.T) {
 	h.Run(context.Background())
 }
 
+func TestPipInstaller(t *testing.T) {
+	t.Parallel()
+	h := newInstallerTestHelper(t, "python-language-server")
+	h.Run(context.Background())
+}
+
 type installerTestHelper struct {
 	t    *testing.T
 	a    *App

@@ -70,6 +70,7 @@ func New(baseDir string) (*App, error) {
 			"efm-langserver":                    NewEfmLSInstaller(baseDir),
 			"vscode-css-languageserver":         NewNpmInstaller(baseDir, "vscode-css-languageserver-bin", "css-languageserver"),
 			"vscode-html-languageserver":        NewNpmInstaller(baseDir, "vscode-html-languageserver-bin", "html-languageserver"),
+			"python-language-server":            NewPipInstaller(baseDir, "python-language-server", "pyls"),
 		},
 		out: os.Stdout,
 	}, nil
