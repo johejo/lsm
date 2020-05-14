@@ -12,6 +12,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNew_xdgDataHome(t *testing.T) {
+	if isWindows {
+		t.Skip()
+	}
+	p, err := filepath.Abs("./testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Setenv("XDG_DATA_HOME", p); err != nil {
+		t.Fatal(err)
+	}
+	a, err := New("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, filepath.Join(p, "lsm", "servers"), a.baseDir)
+}
+
+func TestNew_windows(t *testing.T) {
+	if !isWindows {
+		t.Skip()
+	}
+	a, err := New("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, `%LOCALAPPDATA%\lsm\servers`, a.baseDir)
+}
+
 func TestApp_List(t *testing.T) {
 	baseDir := filepath.Clean("./testdata/lsm/servers")
 	t.Run("not installed any language servers", func(t *testing.T) {
