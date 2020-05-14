@@ -43,7 +43,7 @@ func lookPython() (string, error) {
 	if _, err := exec.LookPath("python"); err != nil {
 		return "", errors.New("no python found")
 	}
-	_out, err := exec.Command("python", "--version").CombinedOutput()
+	_out, err := exec.Command("python", "--version").Output()
 	if err != nil {
 		return "", err
 	}
