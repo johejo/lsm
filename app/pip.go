@@ -26,14 +26,14 @@ func isSupportedPython(v string) (bool, error) {
 	}
 	version, err := semver.NewVersion(v)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("%v: %w", v, err)
 	}
 	return version.GreaterThan(drop), nil
 }
 
 func lookPython3() (string, error) {
 	if _, err := exec.LookPath("python3"); err != nil {
-		return "", nil
+		return "", err
 	}
 	return "python3", nil
 }
@@ -46,7 +46,7 @@ func lookPython() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	out := strings.TrimSuffix(string(_out), "\n")
+	out := strings.TrimSpace(string(_out))
 	v := strings.Split(out, " ") // ["Python", "3.x.y"]
 	if len(v) != 2 {
 		return "", fmt.Errorf("invalid python version output %s", string(_out))
