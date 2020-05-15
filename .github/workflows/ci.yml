@@ -27,6 +27,7 @@ jobs:
         go: ["1.14"]
         node: ["14"]
         java: ["14"]
+        python: ["3.8"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -39,6 +40,9 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
       - name: test
         run: |
           go test -cover -coverprofile coverage.txt -race -v ./...
