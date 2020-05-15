@@ -84,6 +84,9 @@ func (i *PipInstaller) Name() string {
 }
 
 func (i *PipInstaller) BinName() string {
+	if isWindows {
+		return i.BinName() + ".exe"
+	}
 	return i.binName
 }
 

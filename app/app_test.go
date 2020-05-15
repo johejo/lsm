@@ -1,12 +1,11 @@
 package app
 
 import (
-	"bufio"
 	"bytes"
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -69,25 +68,16 @@ func TestApp_List(t *testing.T) {
 		}
 		var buf bytes.Buffer
 		a.out = &buf
-		if err := a.List(context.Background()); err != nil {
+		if err := a.List(context.Background(), ListStyleJSON); err != nil {
 			t.Fatal(err)
 		}
-		s := bufio.NewScanner(&buf)
-		for s.Scan() {
-			found := false
-			line := s.Text()
-			assert.Contains(t, line, "not")
-			for _, i := range a.installers {
-				if strings.Contains(line, i.Name()) {
-					found = true
-					break
-				}
-			}
-			if !found {
-				t.Error("line should contain language server name", line)
-			}
+		var list []languageServer
+		if err := json.NewDecoder(&buf).Decode(&list); err != nil {
+			t.Fatal(err)
 		}
-
+		for _, ls := range list {
+			assert.False(t, ls.Installed)
+		}
 	})
 	t.Run("installed only one", func(t *testing.T) {
 		const efmls = "efm-langserver"
@@ -104,17 +94,31 @@ func TestApp_List(t *testing.T) {
 		}
 		var buf bytes.Buffer
 		a.out = &buf
-		if err := a.List(context.Background()); err != nil {
+		if err := a.List(context.Background(), ListStyleJSON); err != nil {
 			t.Fatal(err)
 		}
-		s := bufio.NewScanner(&buf)
-		for s.Scan() {
-			line := s.Text()
-			if strings.Contains(line, efmls) {
-				assert.NotContains(t, line, "not")
+		var list []languageServer
+		if err := json.NewDecoder(&buf).Decode(&list); err != nil {
+			t.Fatal(err)
+		}
+		for _, ls := range list {
+			if ls.Name == efmls {
+				assert.True(t, ls.Installed)
 			} else {
-				assert.Contains(t, line, "not")
+				assert.False(t, ls.Installed)
 			}
+		}
+	})
+	t.Run("table", func(t *testing.T) {
+		_ = os.RemoveAll(baseDir)
+		a, err := New(baseDir)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var buf bytes.Buffer
+		a.out = &buf
+		if err := a.List(context.Background(), ListStyleTable); err != nil {
+			t.Fatal(err)
 		}
 	})
 }

@@ -22,9 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-
 	"github.com/johejo/lsm/app"
+	"github.com/spf13/cobra"
 )
 
 // listCmd represents the list command
@@ -36,15 +35,20 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err := a.List(cmd.Context()); err != nil {
+		if err := a.List(cmd.Context(), app.ListStyle(output)); err != nil {
 			return err
 		}
 		return nil
 	},
 }
 
+var (
+	output string
+)
+
 func init() {
 	rootCmd.AddCommand(listCmd)
+	listCmd.Flags().StringVarP(&output, "output", "o", "table", `output style ("json", "table")`)
 
 	// Here you will define your flags and configuration settings.
 

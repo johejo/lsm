@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/mattn/go-colorable"
 )
 
 type GoInstaller struct {
@@ -44,12 +46,9 @@ func (i *GoInstaller) cmdRun(ctx context.Context, name string, args ...string) e
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = i.Dir()
 	cmd.Env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
+	cmd.Stdout = colorable.NewColorableStdout()
+	cmd.Stderr = colorable.NewColorableStderr()
+	return cmd.Run()
 }
 
 func (i *GoInstaller) Install(ctx context.Context) error {

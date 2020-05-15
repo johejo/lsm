@@ -1,8 +1,8 @@
 package app
 
 import (
-	"bufio"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -11,7 +11,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
+	"strings"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 var isWindows bool
@@ -119,7 +123,15 @@ func (a *App) Uninstall(ctx context.Context, name string) error {
 	return nil
 }
 
-func (a *App) List(ctx context.Context) error {
+type ListStyle string
+
+const (
+	ListStyleUndefined ListStyle = ""
+	ListStyleJSON      ListStyle = "json"
+	ListStyleTable     ListStyle = "table"
+)
+
+func (a *App) List(ctx context.Context, style ListStyle) error {
 	if err := os.MkdirAll(a.baseDir, 0777); err != nil {
 		return err
 	}
@@ -127,7 +139,7 @@ func (a *App) List(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	buf := bufio.NewWriter(a.out)
+	list := make([]languageServer, 0, len(a.installers))
 	for _, i := range a.installers {
 		found := false
 		for _, d := range dirs {
@@ -144,19 +156,52 @@ func (a *App) List(ctx context.Context) error {
 				}
 			}
 		}
-		var msg string
-		if found {
-			msg = fmt.Sprintf("%s is installed\n", i.Name())
-		} else {
-			msg = fmt.Sprintf("%s is not installed\n", i.Name())
-		}
-		if _, err := buf.WriteString(msg); err != nil {
-			return err
-		}
+		list = append(list, languageServer{
+			Name:      i.Name(),
+			Version:   i.Version(),
+			Installed: found,
+		})
 	}
-	if err := buf.Flush(); err != nil {
+	switch style {
+	case ListStyleJSON:
+		return a.renderJSON(list)
+	case ListStyleTable, ListStyleUndefined:
+		return a.renderTable(list)
+	default:
+		return fmt.Errorf("unsupported list style: %v", style)
+	}
+}
+
+func (a *App) renderJSON(list []languageServer) error {
+	b, err := json.MarshalIndent(list, "", strings.Repeat(" ", 2))
+	if err != nil {
 		return err
 	}
+	if _, err := a.out.Write(b); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *App) renderTable(list []languageServer) error {
+	table := tablewriter.NewWriter(a.out)
+	t := reflect.TypeOf(languageServer{})
+	headers := make([]string, 0, t.NumField())
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		headers = append(headers, f.Name)
+	}
+	table.SetHeader(headers)
+	for _, item := range list {
+		v := reflect.ValueOf(item)
+		t := reflect.TypeOf(item)
+		rows := make([]string, 0, t.NumField())
+		for i := 0; i < t.NumField(); i++ {
+			rows = append(rows, fmt.Sprint(v.Field(i)))
+		}
+		table.Append(rows)
+	}
+	table.Render()
 	return nil
 }
 
@@ -166,4 +211,10 @@ func isExecutable(mode os.FileMode) bool {
 		return true
 	}
 	return mode&0100 != 0
+}
+
+type languageServer struct {
+	Name      string `json:"name"`
+	Version   string `json:"version"`
+	Installed bool   `json:"installed"`
 }

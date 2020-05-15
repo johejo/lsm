@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/mattn/go-colorable"
 	"github.com/mholt/archiver/v3"
 	"github.com/schollz/progressbar/v3"
 )
@@ -50,17 +51,11 @@ func (i *baseInstaller) Download(req *http.Request, dst string) error {
 func (i *baseInstaller) CmdRun(ctx context.Context, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = i.Dir()
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
+	cmd.Stdout = colorable.NewColorableStdout()
+	cmd.Stderr = colorable.NewColorableStderr()
+	return cmd.Run()
 }
 
 func (i *baseInstaller) Extract(ctx context.Context, path string) error {
-	if err := archiver.Unarchive(path, i.Dir()); err != nil {
-		return err
-	}
-	return nil
+	return archiver.Unarchive(path, i.Dir())
 }
