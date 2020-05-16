@@ -25,7 +25,11 @@ func NewGoInstaller(baseDir, goPath, binName string, cgo bool) *GoInstaller {
 		binName: binName,
 		cgo:     cgo,
 	}
-	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	p, err := filepath.Abs(filepath.Join(baseDir, i.Name()))
+	if err != nil {
+		panic(err)
+	}
+	i.baseInstaller = baseInstaller{dir: p}
 	return i
 }
 
