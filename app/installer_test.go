@@ -24,6 +24,7 @@ func TestNpmInstaller(t *testing.T) {
 		"vscode-json-languageserver",
 		"vscode-css-languageserver",
 		"vscode-html-languageserver",
+		"vls",
 	}
 	for _, tt := range tests {
 		t.Run(tt, func(t *testing.T) {
@@ -59,9 +60,17 @@ func TestEfmLSInstaller(t *testing.T) {
 }
 
 func TestPipInstaller(t *testing.T) {
-	t.Parallel()
-	h := newInstallerTestHelper(t, "python-language-server")
-	h.Run(context.Background())
+	tests := []string{
+		"python-language-server",
+		"fortran-language-server",
+	}
+	for _, tt := range tests {
+		t.Run(tt, func(t *testing.T) {
+			t.Parallel()
+			h := newInstallerTestHelper(t, tt)
+			h.Run(context.Background())
+		})
+	}
 }
 
 type installerTestHelper struct {
@@ -77,6 +86,7 @@ func (h *installerTestHelper) Run(ctx context.Context) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	i.SetWriter(ioutil.Discard)
 	if err := a.Install(ctx, ls); err != nil {
 		t.Fatal(err)
 	}

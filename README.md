@@ -80,9 +80,12 @@ lsm list
 - [vscode-css-languagesever](https://github.com/vscode-langservers/vscode-css-languageserver)
 - [vscode-html-languagesever](https://github.com/vscode-langservers/vscode-html-languageserver)
 - [dockerfile-language-server-nodejs](https://github.com/rcjsuen/dockerfile-language-server-nodejs)
+- [vls](https://github.com/vuejs/vetur/tree/master/server)
 - [metals](https://scalameta.org/metals/)
 - [rust-analyzer](https://rust-analyzer.github.io/)
 - [efm-langserver](https://github.com/mattn/efm-langserver)
+- [python-language-server](https://github.com/palantir/python-language-server)
+- [fortran-language-server](https://github.com/hansec/fortran-language-server)
 
 We plan to add more Language Servers.<br>
 If you want to add a new Language Server, please create a PR.<br>

@@ -64,19 +64,20 @@ func lookPython() (string, error) {
 func NewPipInstaller(baseDir, moduleName, binName string) *PipInstaller {
 	i := &PipInstaller{moduleName: moduleName, binName: binName}
 	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	return i
+}
+
+func _lookPython() (string, error) {
 	if !isWindows {
-		python, err := lookPython3()
-		if err == nil {
-			i.python = python
-			return i
+		if _, err := lookPython3(); err == nil {
+			return "python3", nil
 		}
 	}
 	python, err := lookPython()
 	if err != nil {
-		panic(err) //FIXME
+		return "", err
 	}
-	i.python = python
-	return i
+	return python, nil
 }
 
 func (i *PipInstaller) Name() string {
@@ -95,7 +96,18 @@ func (i *PipInstaller) Version() string {
 }
 
 func (i *PipInstaller) Requires() []string {
-	return []string{i.python}
+	return []string{} // use RequiresHook
+}
+
+func (i *PipInstaller) RequiresHook() Hook {
+	return func(ctx context.Context) error {
+		python, err := _lookPython()
+		if err != nil {
+			return err
+		}
+		i.python = python
+		return nil
+	}
 }
 
 func (i *PipInstaller) Install(ctx context.Context) error {

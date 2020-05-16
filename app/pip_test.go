@@ -1,22 +1,23 @@
 package app
 
 import (
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewPipInstaller_lookPython(t *testing.T) {
+func Test_lookPython(t *testing.T) {
 	var want string
 	if isWindows {
 		want = "python"
 	} else {
 		want = "python3"
 	}
-	baseDir := filepath.Clean("./testdata")
-	i := NewPipInstaller(baseDir, "python-language-server", "pyls")
-	assert.Equal(t, want, i.python)
+	got, err := _lookPython()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, got, want)
 }
 
 func Test_isSupportedPython(t *testing.T) {

@@ -67,6 +67,7 @@ func New(baseDir string) (*App, error) {
 			"bash-language-server":              NewNpmInstaller(baseDir, "bash-language-server", "bash-language-server"),
 			"yaml-language-server":              NewNpmInstaller(baseDir, "yaml-language-server", "yaml-language-server"),
 			"vscode-json-languageserver":        NewNpmInstaller(baseDir, "vscode-json-languageserver", "vscode-json-languageserver"),
+			"vls":                               NewNpmInstaller(baseDir, "vls", "vls"),
 			"gopls":                             NewGoInstaller(baseDir, "golang.org/x/tools/gopls", "gopls"),
 			"metals":                            NewMetalsInstaller(baseDir),
 			"kotlin-language-server":            NewKotlinLSInstaller(baseDir),
@@ -75,6 +76,7 @@ func New(baseDir string) (*App, error) {
 			"vscode-css-languageserver":         NewNpmInstaller(baseDir, "vscode-css-languageserver-bin", "css-languageserver"),
 			"vscode-html-languageserver":        NewNpmInstaller(baseDir, "vscode-html-languageserver-bin", "html-languageserver"),
 			"python-language-server":            NewPipInstaller(baseDir, "python-language-server", "pyls"),
+			"fortran-language-server":           NewPipInstaller(baseDir, "fortran-language-server", "fortls"),
 		},
 		out: os.Stdout,
 	}, nil
@@ -93,9 +95,15 @@ func (a *App) Install(ctx context.Context, name string) error {
 	if err != nil {
 		return err
 	}
-	for _, r := range i.Requires() {
-		if _, err := exec.LookPath(r); err != nil {
+	if hook := i.RequiresHook(); hook != nil {
+		if err := hook(ctx); err != nil {
 			return err
+		}
+	} else {
+		for _, r := range i.Requires() {
+			if _, err := exec.LookPath(r); err != nil {
+				return err
+			}
 		}
 	}
 	if err := os.RemoveAll(i.Dir()); err != nil {

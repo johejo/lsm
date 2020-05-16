@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 )
 
@@ -19,7 +18,7 @@ var _ Installer = (*NpmInstaller)(nil)
 
 func NewNpmInstaller(baseDir, moduleName, binName string) *NpmInstaller {
 	return &NpmInstaller{
-		baseInstaller: baseInstaller{filepath.Join(baseDir, moduleName)},
+		baseInstaller: baseInstaller{dir: filepath.Join(baseDir, moduleName)},
 		moduleName:    moduleName,
 		binName:       binName,
 	}
@@ -52,11 +51,7 @@ func (i *NpmInstaller) Install(ctx context.Context) error {
 		return err
 	}
 
-	cmd := exec.CommandContext(ctx, "npm", "install", i.Name())
-	cmd.Dir = i.Dir()
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	if err := i.CmdRun(ctx, "npm", "install", i.Name()); err != nil {
 		return err
 	}
 
