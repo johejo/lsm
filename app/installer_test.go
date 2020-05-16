@@ -27,7 +27,7 @@ func skipCI(t *testing.T, skip bool) {
 func TestApp_InstallAll(t *testing.T) {
 	skipCI(t, false)
 	h := newInstallerTestHelper(t)
-	for k, _ := range h.a.installers {
+	for k := range h.a.installers {
 		k, h := k, h
 		t.Run(k, func(t *testing.T) {
 			t.Parallel()
