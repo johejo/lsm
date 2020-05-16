@@ -45,9 +45,9 @@ func (i *EfmLSInstaller) Version() string {
 func (i *EfmLSInstaller) Install(ctx context.Context) error {
 	var ext string
 	switch runtime.GOOS {
-	case "linux":
+	case linux:
 		ext = "tar.gz"
-	case "darwin", "windows":
+	case darwin, windows:
 		ext = "zip"
 	default:
 		return errors.New(runtime.GOOS + " is not supported")
