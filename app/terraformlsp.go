@@ -20,6 +20,9 @@ func NewTerraformLSPInstaller(baseDir string) *TerraformLSPInstaller {
 }
 
 func (i *TerraformLSPInstaller) BinName() string {
+	if isWindows {
+		return i.Name() + ".exe"
+	}
 	return i.Name()
 }
 
