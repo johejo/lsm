@@ -58,6 +58,7 @@ func (i *MetalsInstaller) Install(ctx context.Context) error {
 			return err
 		}
 	}
+	//nolint:gosec
 	cmd := exec.CommandContext(ctx,
 		"java", "-jar", "coursier", "bootstrap",
 		"--ttl", "Inf", "org.scalameta:metals_2.12:"+i.Version(), "-r", "bintray:scalacenter/releases", "-r", "sonatype:public",

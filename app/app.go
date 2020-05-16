@@ -18,10 +18,19 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+const (
+	linux   = "linux"
+	darwin  = "darwin"
+	windows = "windows"
+
+	appName = "lsm"
+	servers = "servers"
+)
+
 var isWindows bool
 
 func init() {
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		isWindows = true
 	} else {
 		isWindows = false
@@ -34,52 +43,70 @@ type App struct {
 	out        io.Writer
 }
 
+func getBaseDir() (string, error) {
+	var baseDir string
+	switch runtime.GOOS {
+	case linux, darwin:
+		xdgDataHome := os.Getenv("XDG_DATA_HOME")
+		if xdgDataHome != "" {
+			baseDir = filepath.Join(xdgDataHome, appName, servers)
+			break
+		}
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+		baseDir = filepath.Join(home, ".local", "share", appName, servers)
+	case windows:
+		local := os.Getenv("LOCALAPPDATA")
+		if local == "" {
+			return "", errors.New("LOCALAPPDATA is not defined")
+		}
+		baseDir = filepath.Join(local, appName, servers)
+	default:
+		return "", fmt.Errorf("unsupported operating system: %v", runtime.GOOS)
+	}
+	return filepath.Abs(baseDir)
+}
+
 func New(baseDir string) (*App, error) {
 	if baseDir == "" {
-		switch runtime.GOOS {
-		case "linux", "darwin":
-			xdgDataHome := os.Getenv("XDG_DATA_HOME")
-			if xdgDataHome != "" {
-				baseDir = filepath.Join(xdgDataHome, "lsm", "servers")
-				break
-			}
-			home, err := os.UserHomeDir()
-			if err != nil {
-				return nil, err
-			}
-			baseDir = filepath.Join(home, ".local", "share", "lsm", "servers")
-		case "windows":
-			baseDir = filepath.Clean(`%LOCALAPPDATA%\lsm\servers`)
-		}
-	} else {
-		var err error
-		baseDir, err = filepath.Abs(filepath.Clean(baseDir))
+		p, err := getBaseDir()
 		if err != nil {
 			return nil, err
 		}
+		baseDir = p
+	} else {
+		p, err := filepath.Abs(baseDir)
+		if err != nil {
+			return nil, err
+		}
+		baseDir = p
 	}
+	installers := map[string]Installer{
+		"vim-language-server":               NewNpmInstaller(baseDir, "vim-language-server", "vim-language-server"),
+		"typescript-language-server":        NewNpmInstaller(baseDir, "typescript-language-server", "typescript-language-server"),
+		"dockerfile-language-server-nodejs": NewNpmInstaller(baseDir, "dockerfile-language-server-nodejs", "docker-langserver"),
+		"bash-language-server":              NewNpmInstaller(baseDir, "bash-language-server", "bash-language-server"),
+		"yaml-language-server":              NewNpmInstaller(baseDir, "yaml-language-server", "yaml-language-server"),
+		"vscode-json-languageserver":        NewNpmInstaller(baseDir, "vscode-json-languageserver", "vscode-json-languageserver"),
+		"vls":                               NewNpmInstaller(baseDir, "vls", "vls"),
+		"gopls":                             NewGoInstaller(baseDir, "golang.org/x/tools/gopls", "gopls", false),
+		"sqls":                              NewGoInstaller(baseDir, "github.com/lighttiger2505/sqls", "sqls", true),
+		"metals":                            NewMetalsInstaller(baseDir),
+		"kotlin-language-server":            NewKotlinLSInstaller(baseDir),
+		"rust-analyzer":                     NewRustAnalyzerInstaller(baseDir),
+		"efm-langserver":                    NewEfmLSInstaller(baseDir),
+		"vscode-css-languageserver":         NewNpmInstaller(baseDir, "vscode-css-languageserver-bin", "css-languageserver"),
+		"vscode-html-languageserver":        NewNpmInstaller(baseDir, "vscode-html-languageserver-bin", "html-languageserver"),
+		"python-language-server":            NewPipInstaller(baseDir, "python-language-server", "pyls"),
+		"fortran-language-server":           NewPipInstaller(baseDir, "fortran-language-server", "fortls"),
+	}
+
 	return &App{
-		baseDir: baseDir,
-		installers: map[string]Installer{
-			"vim-language-server":               NewNpmInstaller(baseDir, "vim-language-server", "vim-language-server"),
-			"typescript-language-server":        NewNpmInstaller(baseDir, "typescript-language-server", "typescript-language-server"),
-			"dockerfile-language-server-nodejs": NewNpmInstaller(baseDir, "dockerfile-language-server-nodejs", "docker-langserver"),
-			"bash-language-server":              NewNpmInstaller(baseDir, "bash-language-server", "bash-language-server"),
-			"yaml-language-server":              NewNpmInstaller(baseDir, "yaml-language-server", "yaml-language-server"),
-			"vscode-json-languageserver":        NewNpmInstaller(baseDir, "vscode-json-languageserver", "vscode-json-languageserver"),
-			"vls":                               NewNpmInstaller(baseDir, "vls", "vls"),
-			"gopls":                             NewGoInstaller(baseDir, "golang.org/x/tools/gopls", "gopls", false),
-			"sqls":                              NewGoInstaller(baseDir, "github.com/lighttiger2505/sqls", "sqls", true),
-			"metals":                            NewMetalsInstaller(baseDir),
-			"kotlin-language-server":            NewKotlinLSInstaller(baseDir),
-			"rust-analyzer":                     NewRustAnalyzerInstaller(baseDir),
-			"efm-langserver":                    NewEfmLSInstaller(baseDir),
-			"vscode-css-languageserver":         NewNpmInstaller(baseDir, "vscode-css-languageserver-bin", "css-languageserver"),
-			"vscode-html-languageserver":        NewNpmInstaller(baseDir, "vscode-html-languageserver-bin", "html-languageserver"),
-			"python-language-server":            NewPipInstaller(baseDir, "python-language-server", "pyls"),
-			"fortran-language-server":           NewPipInstaller(baseDir, "fortran-language-server", "fortls"),
-		},
-		out: os.Stdout,
+		baseDir:    baseDir,
+		installers: installers,
+		out:        os.Stdout,
 	}, nil
 }
 

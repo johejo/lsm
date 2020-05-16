@@ -36,10 +36,6 @@ func (i *NpmInstaller) Requires() []string {
 	return []string{"node", "npm"}
 }
 
-func (i *NpmInstaller) Version() string {
-	return "latest"
-}
-
 func (i *NpmInstaller) Install(ctx context.Context) error {
 	f, err := os.Create(filepath.Join(i.Dir(), "package.json"))
 	if err != nil {

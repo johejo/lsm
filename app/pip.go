@@ -11,6 +11,11 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
+const (
+	python  = "python"
+	python3 = "python3"
+)
+
 type PipInstaller struct {
 	baseInstaller
 
@@ -32,17 +37,17 @@ func isSupportedPython(v string) (bool, error) {
 }
 
 func lookPython3() (string, error) {
-	if _, err := exec.LookPath("python3"); err != nil {
+	if _, err := exec.LookPath(python3); err != nil {
 		return "", err
 	}
-	return "python3", nil
+	return python3, nil
 }
 
 func lookPython() (string, error) {
-	if _, err := exec.LookPath("python"); err != nil {
+	if _, err := exec.LookPath(python); err != nil {
 		return "", err
 	}
-	_out, err := exec.Command("python", "--version").Output()
+	_out, err := exec.Command(python, "--version").Output()
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +63,7 @@ func lookPython() (string, error) {
 	if !ok {
 		return "", fmt.Errorf("unsupported python version: %v", v)
 	}
-	return "python", nil
+	return python, nil
 }
 
 func NewPipInstaller(baseDir, moduleName, binName string) *PipInstaller {
@@ -73,11 +78,7 @@ func _lookPython() (string, error) {
 			return "python3", nil
 		}
 	}
-	python, err := lookPython()
-	if err != nil {
-		return "", err
-	}
-	return python, nil
+	return lookPython()
 }
 
 func (i *PipInstaller) Name() string {
@@ -91,29 +92,24 @@ func (i *PipInstaller) BinName() string {
 	return i.binName
 }
 
-func (i *PipInstaller) Version() string {
-	return "latest"
-}
-
 func (i *PipInstaller) Requires() []string {
 	return []string{} // use RequiresHook
 }
 
 func (i *PipInstaller) RequiresHook() Hook {
 	return func(ctx context.Context) error {
-		python, err := _lookPython()
+		py, err := _lookPython()
 		if err != nil {
 			return err
 		}
-		i.python = python
+		i.python = py
 		return nil
 	}
 }
 
 func (i *PipInstaller) Install(ctx context.Context) error {
-	python := i.python
 	venv := filepath.Join(i.Dir(), "venv")
-	if err := i.CmdRun(ctx, python, "-m", "venv", venv); err != nil {
+	if err := i.CmdRun(ctx, i.python, "-m", "venv", venv); err != nil {
 		return err
 	}
 	var bin string
@@ -122,7 +118,7 @@ func (i *PipInstaller) Install(ctx context.Context) error {
 	} else {
 		bin = "bin"
 	}
-	vpython := filepath.Join(venv, bin, python)
+	vpython := filepath.Join(venv, bin, i.python)
 	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", "--upgrade", "pip"); err != nil {
 		return err
 	}

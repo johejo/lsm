@@ -41,6 +41,10 @@ func (i *baseInstaller) Dir() string {
 	return i.dir
 }
 
+func (i *baseInstaller) Version() string {
+	return ""
+}
+
 func (i *baseInstaller) Download(req *http.Request, dst string) error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

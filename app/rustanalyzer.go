@@ -44,11 +44,11 @@ func (i *RustAnalyzerInstaller) Version() string {
 func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {
 	var suffix string
 	switch runtime.GOOS {
-	case "darwin":
+	case darwin:
 		suffix = "mac"
-	case "linux":
-		suffix = "linux"
-	case "windows":
+	case linux:
+		suffix = linux
+	case windows:
 		suffix = "windows.exe"
 	default:
 		return errors.New(runtime.GOOS + " is not supported")

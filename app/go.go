@@ -44,10 +44,6 @@ func (i *GoInstaller) BinName() string {
 	return i.binName
 }
 
-func (i *GoInstaller) Version() string {
-	return "latest"
-}
-
 func (i *GoInstaller) cmdRun(ctx context.Context, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = i.Dir()

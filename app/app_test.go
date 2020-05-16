@@ -55,11 +55,13 @@ func TestNew_windows(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, `%LOCALAPPDATA%\lsm\servers`, a.baseDir)
+	local := os.Getenv("LOCALAPPDATA")
+	assert.Equal(t, filepath.Join(local, "lsm", "servers"), a.baseDir)
 }
 
 func TestApp_List(t *testing.T) {
 	baseDir := filepath.Clean("./testdata/lsm/servers")
+
 	t.Run("not installed any language servers", func(t *testing.T) {
 		_ = os.RemoveAll(baseDir)
 		a, err := New(baseDir)
@@ -79,6 +81,7 @@ func TestApp_List(t *testing.T) {
 			assert.False(t, ls.Installed)
 		}
 	})
+
 	t.Run("installed only one", func(t *testing.T) {
 		const efmls = "efm-langserver"
 		_ = os.RemoveAll(baseDir)
@@ -109,6 +112,7 @@ func TestApp_List(t *testing.T) {
 			}
 		}
 	})
+
 	t.Run("table", func(t *testing.T) {
 		_ = os.RemoveAll(baseDir)
 		a, err := New(baseDir)
