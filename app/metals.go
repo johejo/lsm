@@ -3,8 +3,6 @@ package app
 import (
 	"context"
 	"net/http"
-	"os"
-	"os/exec"
 	"path/filepath"
 )
 
@@ -58,16 +56,11 @@ func (i *MetalsInstaller) Install(ctx context.Context) error {
 			return err
 		}
 	}
-	//nolint:gosec
-	cmd := exec.CommandContext(ctx,
+	if err := i.CmdRun(ctx,
 		"java", "-jar", "coursier", "bootstrap",
 		"--ttl", "Inf", "org.scalameta:metals_2.12:"+i.Version(), "-r", "bintray:scalacenter/releases", "-r", "sonatype:public",
 		"-o", filepath.Join(i.Dir(), i.Name()),
-	)
-	cmd.Dir = i.Dir()
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	if err := cmd.Run(); err != nil {
+	); err != nil {
 		return err
 	}
 	return nil
