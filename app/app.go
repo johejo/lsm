@@ -22,6 +22,13 @@ const (
 	linux   = "linux"
 	darwin  = "darwin"
 	windows = "windows"
+	freebsd = "freebsd"
+	openbsd = "openbsd"
+	solaris = "solaris"
+
+	amd64 = "amd64"
+	_386  = "386"
+	arm   = "arm"
 
 	appName = "lsm"
 	servers = "servers"
@@ -101,6 +108,8 @@ func New(baseDir string) (*App, error) {
 		"vscode-html-languageserver":        NewNpmInstaller(baseDir, "vscode-html-languageserver-bin", "html-languageserver"),
 		"python-language-server":            NewPipInstaller(baseDir, "python-language-server", "pyls"),
 		"fortran-language-server":           NewPipInstaller(baseDir, "fortran-language-server", "fortls"),
+		"terraform-lsp":                     NewTerraformLSPInstaller(baseDir),
+		"terraform-ls":                      NewTerraformLSInstaller(baseDir),
 	}
 
 	return &App{
@@ -118,21 +127,35 @@ func (a *App) getInstaller(name string) (Installer, error) {
 	return i, nil
 }
 
+func isSupported(i Installer) error {
+	ss := i.Supports()
+	if len(ss) == 0 {
+		return nil
+	}
+	for _, s := range ss {
+		if runtime.GOARCH == s.arch && runtime.GOOS == s.os {
+			return nil
+		}
+	}
+	return fmt.Errorf("installer does not supports %s on %s %s", i.Name(), runtime.GOOS, runtime.GOARCH)
+}
+
 func (a *App) Install(ctx context.Context, name string) error {
 	i, err := a.getInstaller(name)
 	if err != nil {
 		return err
 	}
 
+	if err := isSupported(i); err != nil {
+		return err
+	}
 	for _, r := range i.Requires() {
 		if _, err := exec.LookPath(r); err != nil {
 			return err
 		}
 	}
-	if hook := i.RequiresHook(); hook != nil {
-		if err := hook(ctx); err != nil {
-			return err
-		}
+	if err := i.RequireHook(ctx); err != nil {
+		return err
 	}
 
 	if err := os.RemoveAll(i.Dir()); err != nil {

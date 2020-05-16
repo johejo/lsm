@@ -87,6 +87,8 @@ lsm list
 - [python-language-server](https://github.com/palantir/python-language-server)
 - [fortran-language-server](https://github.com/hansec/fortran-language-server)
 - [sqls](https://github.com/lighttiger2505/sqls)
+- [terraform-lsp](https://github.com/juliosueiras/terraform-lsp)
+- [terraform-ls](https://github.com/hashicorp/terraform-ls)
 
 We plan to add more Language Servers.<br>
 If you want to add a new Language Server, please create a PR.<br>

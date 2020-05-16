@@ -68,7 +68,7 @@ func lookPython() (string, error) {
 
 func NewPipInstaller(baseDir, moduleName, binName string) *PipInstaller {
 	i := &PipInstaller{moduleName: moduleName, binName: binName}
-	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	i.baseInstaller = newBaseInstaller(filepath.Join(baseDir, i.Name()))
 	return i
 }
 
@@ -93,18 +93,16 @@ func (i *PipInstaller) BinName() string {
 }
 
 func (i *PipInstaller) Requires() []string {
-	return []string{} // use RequiresHook
+	return []string{} // use RequireHook
 }
 
-func (i *PipInstaller) RequiresHook() Hook {
-	return func(ctx context.Context) error {
-		py, err := _lookPython()
-		if err != nil {
-			return err
-		}
-		i.python = py
-		return nil
+func (i *PipInstaller) RequireHook(ctx context.Context) error {
+	py, err := _lookPython()
+	if err != nil {
+		return err
 	}
+	i.python = py
+	return nil
 }
 
 func (i *PipInstaller) Install(ctx context.Context) error {
@@ -120,6 +118,9 @@ func (i *PipInstaller) Install(ctx context.Context) error {
 	}
 	vpython := filepath.Join(venv, bin, i.python)
 	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", "--upgrade", "pip"); err != nil {
+		return err
+	}
+	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", "--upgrade", "wheel"); err != nil {
 		return err
 	}
 	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", i.Name()); err != nil {

@@ -42,6 +42,14 @@ func (i *EfmLSInstaller) Version() string {
 	return "0.0.14"
 }
 
+func (i *EfmLSInstaller) Supports() []Support {
+	return []Support{
+		{os: darwin, arch: amd64},
+		{os: linux, arch: amd64},
+		{os: windows, arch: amd64},
+	}
+}
+
 func (i *EfmLSInstaller) Install(ctx context.Context) error {
 	var ext string
 	switch runtime.GOOS {

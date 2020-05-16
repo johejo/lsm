@@ -2,7 +2,9 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -18,23 +20,38 @@ type Installer interface {
 	BinName() string
 	Dir() string
 	Requires() []string
-	RequiresHook() Hook
+	RequireHook(ctx context.Context) error
+	Supports() []Support
 	Version() string
 	Install(ctx context.Context) error
 	SetWriter(w io.Writer)
 }
 
-type baseInstaller struct {
-	dir string
-	out io.Writer
+type Support struct {
+	os, arch string
 }
 
-func (i *baseInstaller) RequiresHook() Hook {
+type baseInstaller struct {
+	dir            string
+	stdout, stderr io.Writer
+}
+
+func newBaseInstaller(dir string) baseInstaller {
+	stdout := colorable.NewColorableStdout()
+	stderr := colorable.NewColorableStderr()
+	return baseInstaller{dir: dir, stdout: stdout, stderr: stderr}
+}
+
+func (i *baseInstaller) RequireHook(ctx context.Context) error {
 	return nil
 }
 
+func (i *baseInstaller) Supports() []Support {
+	return []Support{}
+}
+
 func (i *baseInstaller) SetWriter(w io.Writer) {
-	i.out = w
+	i.stderr = w
 }
 
 func (i *baseInstaller) Dir() string {
@@ -51,18 +68,24 @@ func (i *baseInstaller) Download(req *http.Request, dst string) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("invalid status code: %v, body=%v", resp.StatusCode, string(b))
+	}
+
 	f, err := os.Create(filepath.Clean(dst))
 	if err != nil {
 		return err
 	}
 	defer f.Close()
+
 	bar := pb.Full.Start64(resp.ContentLength)
 	defer bar.Finish()
-	if i.out == nil {
-		bar.SetWriter(colorable.NewColorableStderr())
-	} else {
-		bar.SetWriter(i.out)
-	}
+	bar.SetWriter(i.stderr)
 	pr := bar.NewProxyReader(resp.Body)
 	if _, err := io.Copy(f, pr); err != nil {
 		return err
@@ -81,5 +104,3 @@ func (i *baseInstaller) CmdRun(ctx context.Context, name string, args ...string)
 func (i *baseInstaller) Extract(ctx context.Context, path string) error {
 	return archiver.Unarchive(path, i.Dir())
 }
-
-type Hook func(ctx context.Context) error

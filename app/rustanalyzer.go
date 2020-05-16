@@ -18,7 +18,7 @@ var _ Installer = (*RustAnalyzerInstaller)(nil)
 
 func NewRustAnalyzerInstaller(baseDir string) *RustAnalyzerInstaller {
 	var i RustAnalyzerInstaller
-	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	i.baseInstaller = newBaseInstaller(filepath.Join(baseDir, i.Name()))
 	return &i
 }
 
@@ -39,6 +39,14 @@ func (i *RustAnalyzerInstaller) Requires() []string {
 
 func (i *RustAnalyzerInstaller) Version() string {
 	return "2020-05-11"
+}
+
+func (i *RustAnalyzerInstaller) Supports() []Support {
+	return []Support{
+		{os: darwin, arch: amd64},
+		{os: linux, arch: amd64},
+		{os: windows, arch: amd64},
+	}
 }
 
 func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {
@@ -63,7 +71,6 @@ func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {
 	if err := i.Download(req, bin); err != nil {
 		return err
 	}
-	// TODO Does this work on Windows?
 	if err := os.Chmod(bin, 0777); err != nil {
 		return err
 	}

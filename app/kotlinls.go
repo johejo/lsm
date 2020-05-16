@@ -17,7 +17,7 @@ var _ Installer = (*KotlinLSInstaller)(nil)
 
 func NewKotlinLSInstaller(baseDir string) *KotlinLSInstaller {
 	var i KotlinLSInstaller
-	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	i.baseInstaller = newBaseInstaller(filepath.Join(baseDir, i.Name()))
 	return &i
 }
 

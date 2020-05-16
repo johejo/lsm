@@ -18,7 +18,7 @@ var _ Installer = (*NpmInstaller)(nil)
 
 func NewNpmInstaller(baseDir, moduleName, binName string) *NpmInstaller {
 	return &NpmInstaller{
-		baseInstaller: baseInstaller{dir: filepath.Join(baseDir, moduleName)},
+		baseInstaller: newBaseInstaller(filepath.Join(baseDir, moduleName)),
 		moduleName:    moduleName,
 		binName:       binName,
 	}

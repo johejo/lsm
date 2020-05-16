@@ -6,25 +6,54 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
+func ci() bool {
+	ci, _ := strconv.ParseBool(os.Getenv("CI"))
+	return ci
+}
+
+func skipCI(t *testing.T, skip bool) {
+	t.Helper()
+	if skip && ci() {
+		t.Skip()
+	}
+}
+
+func TestApp_InstallAll(t *testing.T) {
+	skipCI(t, false)
+	h := newInstallerTestHelper(t)
+	for k, _ := range h.a.installers {
+		k, h := k, h
+		t.Run(k, func(t *testing.T) {
+			t.Parallel()
+			h.Run(context.Background(), k)
+		})
+	}
+}
+
 func TestGoInstaller(t *testing.T) {
+	skipCI(t, true)
 	tests := []string{
 		"gopls",
 		"sqls",
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt, func(t *testing.T) {
-			tt := tt
 			t.Parallel()
-			h := newInstallerTestHelper(t, tt)
-			h.Run(context.Background())
+			h := newInstallerTestHelper(t)
+			h.Run(context.Background(), tt)
 		})
 	}
 }
 
 func TestNpmInstaller(t *testing.T) {
+	skipCI(t, true)
 	tests := []string{
 		"typescript-language-server",
 		"vim-language-server",
@@ -37,69 +66,83 @@ func TestNpmInstaller(t *testing.T) {
 		"vls",
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt, func(t *testing.T) {
-			tt := tt
 			t.Parallel()
-			h := newInstallerTestHelper(t, tt)
-			h.Run(context.Background())
+			h := newInstallerTestHelper(t)
+			h.Run(context.Background(), tt)
 		})
 	}
 }
 
 func TestMetalsInstaller(t *testing.T) {
-	t.Parallel()
-	h := newInstallerTestHelper(t, "metals")
-	h.Run(context.Background())
+	skipCI(t, true)
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "metals")
 }
 
 func TestKotlinLSInstaller(t *testing.T) {
-	t.Parallel()
-	h := newInstallerTestHelper(t, "kotlin-language-server")
-	h.Run(context.Background())
+	skipCI(t, true)
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "kotlin-language-server")
 }
 
 func TestRustAnalyzerInstaller(t *testing.T) {
-	t.Parallel()
-	h := newInstallerTestHelper(t, "rust-analyzer")
-	h.Run(context.Background())
+	skipCI(t, true)
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "rust-analyzer")
 }
 
 func TestEfmLSInstaller(t *testing.T) {
-	t.Parallel()
-	h := newInstallerTestHelper(t, "efm-langserver")
-	h.Run(context.Background())
+	skipCI(t, true)
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "efm-langserver")
 }
 
 func TestPipInstaller(t *testing.T) {
+	skipCI(t, true)
 	tests := []string{
 		"python-language-server",
 		"fortran-language-server",
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt, func(t *testing.T) {
-			tt := tt
 			t.Parallel()
-			h := newInstallerTestHelper(t, tt)
-			h.Run(context.Background())
+			h := newInstallerTestHelper(t)
+			h.Run(context.Background(), tt)
 		})
 	}
 }
 
-type installerTestHelper struct {
-	t    *testing.T
-	a    *App
-	name string
+func TestTerraformLSPInstaller(t *testing.T) {
+	skipCI(t, true)
+	t.Parallel()
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "terraform-lsp")
 }
 
-func (h *installerTestHelper) Run(ctx context.Context) {
-	t, a, ls := h.t, h.a, h.name
-	t.Helper()
-	i, err := a.getInstaller(ls)
+func TestTerraformLSInstaller(t *testing.T) {
+	skipCI(t, true)
+	t.Parallel()
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "terraform-ls")
+}
+
+type installerTestHelper struct {
+	t *testing.T
+	a *App
+}
+
+func (h *installerTestHelper) Run(ctx context.Context, name string) {
+	t, a := h.t, h.a
+	i, err := a.getInstaller(name)
 	if err != nil {
 		t.Fatal(err)
 	}
+	assert.NoError(t, isSupported(i))
 	i.SetWriter(ioutil.Discard)
-	if err := a.Install(ctx, ls); err != nil {
+	if err := a.Install(ctx, name); err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
@@ -112,12 +155,12 @@ func (h *installerTestHelper) Run(ctx context.Context) {
 		t.Fatal(err)
 	}
 	if !isExecutable(info.Mode()) {
-		t.Fatal(ls + " is not executable")
+		t.Fatal(i.BinName() + " is not executable")
 	}
-	if err := a.Uninstall(ctx, ls); err != nil {
+	if err := a.Uninstall(ctx, name); err != nil {
 		t.Fatal(err)
 	}
-	files, err := ioutil.ReadDir(filepath.Join(a.baseDir, ls))
+	files, err := ioutil.ReadDir(i.Dir())
 	if err != nil {
 		var pathErr *os.PathError
 		if !errors.As(err, &pathErr) {
@@ -129,7 +172,7 @@ func (h *installerTestHelper) Run(ctx context.Context) {
 	}
 }
 
-func newInstallerTestHelper(t *testing.T, name string) *installerTestHelper {
+func newInstallerTestHelper(t *testing.T) *installerTestHelper {
 	t.Helper()
 	if testing.Short() {
 		t.Skip()
@@ -148,5 +191,5 @@ func newInstallerTestHelper(t *testing.T, name string) *installerTestHelper {
 		t.Fatal(err)
 	}
 	a.baseDir = tmp
-	return &installerTestHelper{t: t, a: a, name: name}
+	return &installerTestHelper{t: t, a: a}
 }

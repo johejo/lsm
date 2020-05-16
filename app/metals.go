@@ -14,7 +14,7 @@ var _ Installer = (*MetalsInstaller)(nil)
 
 func NewMetalsInstaller(baseDir string) *MetalsInstaller {
 	var i MetalsInstaller
-	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
+	i.baseInstaller = newBaseInstaller(filepath.Join(baseDir, i.Name()))
 	return &i
 }
 
