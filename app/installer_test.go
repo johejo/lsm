@@ -10,8 +10,18 @@ import (
 )
 
 func TestGoInstaller(t *testing.T) {
-	h := newInstallerTestHelper(t, "gopls")
-	h.Run(context.Background())
+	tests := []string{
+		"gopls",
+		"sqls",
+	}
+	for _, tt := range tests {
+		t.Run(tt, func(t *testing.T) {
+			tt := tt
+			t.Parallel()
+			h := newInstallerTestHelper(t, tt)
+			h.Run(context.Background())
+		})
+	}
 }
 
 func TestNpmInstaller(t *testing.T) {
@@ -28,6 +38,7 @@ func TestNpmInstaller(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt, func(t *testing.T) {
+			tt := tt
 			t.Parallel()
 			h := newInstallerTestHelper(t, tt)
 			h.Run(context.Background())
@@ -66,6 +77,7 @@ func TestPipInstaller(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt, func(t *testing.T) {
+			tt := tt
 			t.Parallel()
 			h := newInstallerTestHelper(t, tt)
 			h.Run(context.Background())

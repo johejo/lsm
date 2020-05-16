@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/mattn/go-colorable"
 )
@@ -12,16 +13,17 @@ import (
 type GoInstaller struct {
 	baseInstaller
 
-	goPath  string
-	binName string
+	goPath, binName string
+	cgo             bool
 }
 
 var _ Installer = (*GoInstaller)(nil)
 
-func NewGoInstaller(baseDir, goPath, binName string) *GoInstaller {
+func NewGoInstaller(baseDir, goPath, binName string, cgo bool) *GoInstaller {
 	i := &GoInstaller{
 		goPath:  goPath,
 		binName: binName,
+		cgo:     cgo,
 	}
 	i.baseInstaller = baseInstaller{dir: filepath.Join(baseDir, i.Name())}
 	return i
@@ -45,7 +47,7 @@ func (i *GoInstaller) Version() string {
 func (i *GoInstaller) cmdRun(ctx context.Context, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = i.Dir()
-	cmd.Env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir())
+	cmd.Env = append(os.Environ(), "GOPATH="+i.Dir(), "GOBIN="+i.Dir(), "GO111MODULE=on")
 	cmd.Stdout = colorable.NewColorableStdout()
 	cmd.Stderr = colorable.NewColorableStderr()
 	return cmd.Run()
@@ -66,4 +68,21 @@ func (i *GoInstaller) Install(ctx context.Context) error {
 
 func (i *GoInstaller) Requires() []string {
 	return []string{"go"}
+}
+
+func (i *GoInstaller) RequiresHook() Hook {
+	return func(ctx context.Context) error {
+		if !i.cgo {
+			return nil
+		}
+		out, err := exec.CommandContext(ctx, "go", "env", "CC").Output()
+		if err != nil {
+			return err
+		}
+		cc := strings.TrimSpace(string(out))
+		if _, err := exec.LookPath(cc); err != nil {
+			return err
+		}
+		return nil
+	}
 }
