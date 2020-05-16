@@ -83,6 +83,9 @@ func TestApp_List(t *testing.T) {
 	})
 
 	t.Run("installed only one", func(t *testing.T) {
+		if testing.Short() {
+			t.Skip()
+		}
 		const efmls = "efm-langserver"
 		_ = os.RemoveAll(baseDir)
 		a, err := New(baseDir)
