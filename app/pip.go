@@ -121,10 +121,7 @@ func (i *PipInstaller) Install(ctx context.Context) error {
 		bin = "bin"
 	}
 	vpython := filepath.Join(venv, bin, i.python)
-	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", "--upgrade", "pip"); err != nil {
-		return err
-	}
-	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", "--upgrade", "wheel"); err != nil {
+	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"); err != nil {
 		return err
 	}
 	if err := i.CmdRun(ctx, vpython, "-m", "pip", "install", i.Name()); err != nil {
