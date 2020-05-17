@@ -137,11 +137,21 @@ func TestEclipseJDTLSInstaller(t *testing.T) {
 	h.Run(context.Background(), "eclipse.jdt.ls")
 }
 
-func TestESLintServerInstaller(t *testing.T) {
+func TestVSCodeExtensionInstaller(t *testing.T) {
 	skipCI(t, true)
-	t.Parallel()
-	h := newInstallerTestHelper(t)
-	h.Run(context.Background(), "eslint-server")
+	tests := []string{
+		"eslint-server",
+		"reason-language-server",
+		"lemminx",
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt, func(t *testing.T) {
+			t.Parallel()
+			h := newInstallerTestHelper(t)
+			h.Run(context.Background(), tt)
+		})
+	}
 }
 
 type installerTestHelper struct {

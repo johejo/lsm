@@ -9,11 +9,10 @@ linters:
     - godox
     - wsl
     - gomnd
+    - lll
 linters-settings:
   errcheck:
     check-type-assertions: true
-  lll:
-    line-length: 200
 issues:
   exclude-rules:
     - path: _test\.go

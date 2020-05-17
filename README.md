@@ -92,6 +92,8 @@ lsm list
 - [eclipse.jdt.ls](https://github.com/eclipse/eclipse.jdt.ls)
 - [eslint-server(vscode-eslint)](https://github.com/microsoft/vscode-eslint)
 - [svelte-language-server](https://github.com/sveltejs/language-tools/tree/master/packages/language-server)
+- [lemminx](https://github.com/eclipse/lemminx) ([vscode-xml](https://github.com/redhat-developer/vscode-xml))
+- [reason-language-server](https://github.com/jaredly/reason-language-server)
 
 We plan to add more Language Servers.<br>
 If you want to add a new Language Server, please create a PR.<br>
