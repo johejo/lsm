@@ -61,7 +61,7 @@ func (i *EfmLSInstaller) Install(ctx context.Context) error {
 	target := fmt.Sprintf("efm-langserver_v%s_%s_amd64", i.Version(), runtime.GOOS)
 	archive := fmt.Sprintf("%s.%s", target, ext)
 	u := fmt.Sprintf("https://github.com/mattn/efm-langserver/releases/download/v%s/%s", i.Version(), archive)
-	if err := i.FetchWithExtract(ctx, u, archive); err != nil {
+	if err := i.FetchWithExtract(ctx, u, filepath.Join(i.Dir(), archive)); err != nil {
 		return err
 	}
 	src := filepath.Join(target, i.BinName())

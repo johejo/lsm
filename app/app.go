@@ -82,6 +82,7 @@ func New(baseDir string) (*App, error) {
 		"yaml-language-server":              NewNpmInstaller(baseDir, "yaml-language-server", "yaml-language-server"),
 		"vscode-json-languageserver":        NewNpmInstaller(baseDir, "vscode-json-languageserver", "vscode-json-languageserver"),
 		"vls":                               NewNpmInstaller(baseDir, "vls", "vls"),
+		"svelte-language-server":            NewNpmInstaller(baseDir, "svelte-language-server", "svelteserver"),
 		"gopls":                             NewGoInstaller(baseDir, "golang.org/x/tools/gopls", "gopls", false),
 		"sqls":                              NewGoInstaller(baseDir, "github.com/lighttiger2505/sqls", "sqls", true),
 		"metals":                            NewMetalsInstaller(baseDir),

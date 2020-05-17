@@ -37,5 +37,5 @@ func (i *EclipseJDTLSInstaller) Requires() []string {
 func (i *EclipseJDTLSInstaller) Install(ctx context.Context) error {
 	archive := fmt.Sprintf("jdt-language-server-%s.tar.gz", i.Version())
 	u := fmt.Sprintf("https://download.eclipse.org/jdtls/snapshots/%s", archive)
-	return i.FetchWithExtract(ctx, u, archive)
+	return i.FetchWithExtract(ctx, u, filepath.Join(i.Dir(), archive))
 }

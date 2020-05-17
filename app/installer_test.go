@@ -64,6 +64,7 @@ func TestNpmInstaller(t *testing.T) {
 		"vscode-css-languageserver",
 		"vscode-html-languageserver",
 		"vls",
+		"svelte-language-server",
 	}
 	for _, tt := range tests {
 		tt := tt

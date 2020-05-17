@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/mattn/go-colorable"
@@ -89,7 +88,7 @@ func (i *baseInstaller) Dir() string {
 	return i.dir
 }
 
-func (i *baseInstaller) Download(req *http.Request, dst string) error {
+func (i *baseInstaller) Download(req *http.Request, archive string) error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
@@ -104,7 +103,7 @@ func (i *baseInstaller) Download(req *http.Request, dst string) error {
 		return fmt.Errorf("invalid status code: %v, body=%v", resp.StatusCode, string(b))
 	}
 
-	f, err := os.Create(filepath.Clean(dst))
+	f, err := os.Create(archive)
 	if err != nil {
 		return err
 	}
