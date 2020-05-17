@@ -18,22 +18,6 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-const (
-	linux   = "linux"
-	darwin  = "darwin"
-	windows = "windows"
-	freebsd = "freebsd"
-	openbsd = "openbsd"
-	solaris = "solaris"
-
-	amd64 = "amd64"
-	_386  = "386"
-	arm   = "arm"
-
-	appName = "lsm"
-	servers = "servers"
-)
-
 var isWindows bool
 
 func init() {
@@ -111,6 +95,7 @@ func New(baseDir string) (*App, error) {
 		"terraform-lsp":                     NewTerraformLSPInstaller(baseDir),
 		"terraform-ls":                      NewTerraformLSInstaller(baseDir),
 		"eclipse.jdt.ls":                    NewEclipseJDTLSInstaller(baseDir),
+		"eslint-server":                     NewESLintServerInstaller(baseDir),
 	}
 
 	return &App{

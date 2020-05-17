@@ -92,8 +92,12 @@ func (i *PipInstaller) BinName() string {
 	return i.binName
 }
 
+func (i *PipInstaller) Version() string {
+	return versionUnSpecified
+}
+
 func (i *PipInstaller) Requires() []string {
-	return []string{} // use RequireHook
+	return noRequires // use RequireHook
 }
 
 func (i *PipInstaller) RequireHook(ctx context.Context) error {

@@ -32,6 +32,10 @@ func (i *NpmInstaller) BinName() string {
 	return i.binName
 }
 
+func (i *NpmInstaller) Version() string {
+	return versionUnSpecified
+}
+
 func (i *NpmInstaller) Requires() []string {
 	return []string{"node", "npm"}
 }

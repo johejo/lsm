@@ -90,6 +90,7 @@ lsm list
 - [terraform-lsp](https://github.com/juliosueiras/terraform-lsp)
 - [terraform-ls](https://github.com/hashicorp/terraform-ls)
 - [eclipse.jdt.ls](https://github.com/eclipse/eclipse.jdt.ls)
+- [eslint-server(vscode-eslint)](https://github.com/microsoft/vscode-eslint)
 
 We plan to add more Language Servers.<br>
 If you want to add a new Language Server, please create a PR.<br>

@@ -27,7 +27,7 @@ func (i *TerraformLSInstaller) BinName() string {
 }
 
 func (i *TerraformLSInstaller) Requires() []string {
-	return []string{}
+	return noRequires
 }
 
 func (i *TerraformLSInstaller) Name() string {

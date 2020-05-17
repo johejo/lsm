@@ -16,6 +16,36 @@ import (
 	"github.com/mholt/archiver/v3"
 )
 
+const (
+	linux   = "linux"
+	darwin  = "darwin"
+	windows = "windows"
+	freebsd = "freebsd"
+	openbsd = "openbsd"
+	solaris = "solaris"
+
+	amd64 = "amd64"
+	_386  = "386"
+	arm   = "arm"
+
+	appName = "lsm"
+	servers = "servers"
+
+	noExecutable       = ""
+	versionUnSpecified = ""
+)
+
+// readonly
+var (
+	noRequires []string
+
+	generalSupports = []Support{
+		{os: darwin, arch: amd64},
+		{os: linux, arch: amd64},
+		{os: windows, arch: amd64},
+	}
+)
+
 type Installer interface {
 	Name() string
 	BinName() string
@@ -57,10 +87,6 @@ func (i *baseInstaller) SetWriter(w io.Writer) {
 
 func (i *baseInstaller) Dir() string {
 	return i.dir
-}
-
-func (i *baseInstaller) Version() string {
-	return ""
 }
 
 func (i *baseInstaller) Download(req *http.Request, dst string) error {

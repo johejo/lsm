@@ -31,7 +31,7 @@ func (i *KotlinLSInstaller) BinName() string {
 }
 
 func (i *KotlinLSInstaller) Requires() []string {
-	return []string{}
+	return noRequires
 }
 
 func (i *KotlinLSInstaller) Version() string {

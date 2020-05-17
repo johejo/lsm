@@ -33,7 +33,7 @@ func (i *EfmLSInstaller) BinName() string {
 }
 
 func (i *EfmLSInstaller) Requires() []string {
-	return []string{}
+	return noRequires
 }
 
 func (i *EfmLSInstaller) Version() string {

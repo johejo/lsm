@@ -27,7 +27,7 @@ func (i *TerraformLSPInstaller) BinName() string {
 }
 
 func (i *TerraformLSPInstaller) Requires() []string {
-	return []string{}
+	return noRequires
 }
 
 func (i *TerraformLSPInstaller) Name() string {
@@ -39,11 +39,7 @@ func (i *TerraformLSPInstaller) Version() string {
 }
 
 func (i *TerraformLSPInstaller) Supports() []Support {
-	return []Support{
-		{os: darwin, arch: amd64},
-		{os: linux, arch: amd64},
-		{os: windows, arch: amd64},
-	}
+	return generalSupports
 }
 
 func (i *TerraformLSPInstaller) Install(ctx context.Context) error {

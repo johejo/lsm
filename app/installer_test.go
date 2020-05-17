@@ -136,6 +136,13 @@ func TestEclipseJDTLSInstaller(t *testing.T) {
 	h.Run(context.Background(), "eclipse.jdt.ls")
 }
 
+func TestESLintServerInstaller(t *testing.T) {
+	skipCI(t, true)
+	t.Parallel()
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "eslint-server")
+}
+
 type installerTestHelper struct {
 	t *testing.T
 	a *App

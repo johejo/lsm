@@ -34,7 +34,7 @@ func (i *RustAnalyzerInstaller) BinName() string {
 }
 
 func (i *RustAnalyzerInstaller) Requires() []string {
-	return []string{}
+	return noRequires
 }
 
 func (i *RustAnalyzerInstaller) Version() string {
@@ -42,11 +42,7 @@ func (i *RustAnalyzerInstaller) Version() string {
 }
 
 func (i *RustAnalyzerInstaller) Supports() []Support {
-	return []Support{
-		{os: darwin, arch: amd64},
-		{os: linux, arch: amd64},
-		{os: windows, arch: amd64},
-	}
+	return generalSupports
 }
 
 func (i *RustAnalyzerInstaller) Install(ctx context.Context) error {

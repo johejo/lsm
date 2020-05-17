@@ -31,7 +31,7 @@ func (i *EclipseJDTLSInstaller) BinName() string {
 }
 
 func (i *EclipseJDTLSInstaller) Requires() []string {
-	return []string{}
+	return noRequires
 }
 
 func (i *EclipseJDTLSInstaller) Install(ctx context.Context) error {
