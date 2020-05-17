@@ -89,6 +89,7 @@ lsm list
 - [sqls](https://github.com/lighttiger2505/sqls)
 - [terraform-lsp](https://github.com/juliosueiras/terraform-lsp)
 - [terraform-ls](https://github.com/hashicorp/terraform-ls)
+- [eclipse.jdt.ls](https://github.com/eclipse/eclipse.jdt.ls)
 
 We plan to add more Language Servers.<br>
 If you want to add a new Language Server, please create a PR.<br>

@@ -56,12 +56,9 @@ func (i *MetalsInstaller) Install(ctx context.Context) error {
 			return err
 		}
 	}
-	if err := i.CmdRun(ctx,
+	return i.CmdRun(ctx,
 		"java", "-jar", "coursier", "bootstrap",
 		"--ttl", "Inf", "org.scalameta:metals_2.12:"+i.Version(), "-r", "bintray:scalacenter/releases", "-r", "sonatype:public",
 		"-o", filepath.Join(i.Dir(), i.Name()),
-	); err != nil {
-		return err
-	}
-	return nil
+	)
 }

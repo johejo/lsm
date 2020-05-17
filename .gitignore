@@ -2,3 +2,7 @@
 lsm
 coverage.txt
 .npm
+*.tar.gz
+*.zip
+*.exe
+*.jar

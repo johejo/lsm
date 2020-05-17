@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -63,22 +61,9 @@ func (i *EfmLSInstaller) Install(ctx context.Context) error {
 	target := fmt.Sprintf("efm-langserver_v%s_%s_amd64", i.Version(), runtime.GOOS)
 	archive := fmt.Sprintf("%s.%s", target, ext)
 	u := fmt.Sprintf("https://github.com/mattn/efm-langserver/releases/download/v%s/%s", i.Version(), archive)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
+	if err := i.FetchWithExtract(ctx, u, archive); err != nil {
 		return err
 	}
-	tmp := filepath.Join(i.Dir(), archive)
-	if err := i.Download(req, tmp); err != nil {
-		return err
-	}
-	if err := i.Extract(ctx, tmp); err != nil {
-		return err
-	}
-	defer func() {
-		if err := os.Remove(tmp); err != nil {
-			log.Println(err)
-		}
-	}()
 	src := filepath.Join(target, i.BinName())
 	dst := filepath.Join(i.Dir(), i.BinName())
 	if err := os.Symlink(src, dst); err != nil {

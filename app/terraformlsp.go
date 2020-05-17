@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"path/filepath"
 	"runtime"
 )
@@ -49,16 +48,5 @@ func (i *TerraformLSPInstaller) Supports() []Support {
 
 func (i *TerraformLSPInstaller) Install(ctx context.Context) error {
 	u := fmt.Sprintf("https://github.com/juliosueiras/terraform-lsp/releases/download/v%[1]s/terraform-lsp_%[1]s_%s_amd64.tar.gz", i.Version(), runtime.GOOS)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return err
-	}
-	archive := filepath.Join(i.Dir(), i.Name()+".tar.gz")
-	if err := i.Download(req, archive); err != nil {
-		return err
-	}
-	if err := i.Extract(ctx, archive); err != nil {
-		return err
-	}
-	return nil
+	return i.FetchWithExtract(ctx, u, filepath.Join(i.Dir(), i.Name()+".tar.gz"))
 }

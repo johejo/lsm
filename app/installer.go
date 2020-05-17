@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -96,11 +97,34 @@ func (i *baseInstaller) Download(req *http.Request, dst string) error {
 func (i *baseInstaller) CmdRun(ctx context.Context, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = i.Dir()
-	cmd.Stdout = colorable.NewColorableStdout()
-	cmd.Stderr = colorable.NewColorableStderr()
+	cmd.Stdout = i.stdout
+	cmd.Stderr = i.stderr
 	return cmd.Run()
 }
 
 func (i *baseInstaller) Extract(ctx context.Context, path string) error {
+	defer func() {
+		if err := os.Remove(path); err != nil {
+			log.Println(err)
+		}
+	}()
 	return archiver.Unarchive(path, i.Dir())
+}
+
+func (i *baseInstaller) ExtractWithDownload(req *http.Request, path string) error {
+	if err := i.Download(req, path); err != nil {
+		return err
+	}
+	if err := i.Extract(req.Context(), path); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (i *baseInstaller) FetchWithExtract(ctx context.Context, url string, path string) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	return i.ExtractWithDownload(req, path)
 }

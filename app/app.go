@@ -110,6 +110,7 @@ func New(baseDir string) (*App, error) {
 		"fortran-language-server":           NewPipInstaller(baseDir, "fortran-language-server", "fortls"),
 		"terraform-lsp":                     NewTerraformLSPInstaller(baseDir),
 		"terraform-ls":                      NewTerraformLSInstaller(baseDir),
+		"eclipse.jdt.ls":                    NewEclipseJDTLSInstaller(baseDir),
 	}
 
 	return &App{

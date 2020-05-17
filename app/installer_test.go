@@ -129,6 +129,13 @@ func TestTerraformLSInstaller(t *testing.T) {
 	h.Run(context.Background(), "terraform-ls")
 }
 
+func TestEclipseJDTLSInstaller(t *testing.T) {
+	skipCI(t, true)
+	t.Parallel()
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "eclipse.jdt.ls")
+}
+
 type installerTestHelper struct {
 	t *testing.T
 	a *App
@@ -150,12 +157,14 @@ func (h *installerTestHelper) Run(ctx context.Context, name string) {
 			t.Fatal(err)
 		}
 	})
-	info, err := os.Stat(filepath.Join(i.Dir(), i.BinName()))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !isExecutable(info.Mode()) {
-		t.Fatal(i.BinName() + " is not executable")
+	if i.BinName() != "" {
+		info, err := os.Stat(filepath.Join(i.Dir(), i.BinName()))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !isExecutable(info.Mode()) {
+			t.Fatal(i.BinName() + " is not executable")
+		}
 	}
 	if err := a.Uninstall(ctx, name); err != nil {
 		t.Fatal(err)

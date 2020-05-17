@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"path/filepath"
 	"runtime"
 )
@@ -63,16 +62,5 @@ func (i *TerraformLSInstaller) Supports() []Support {
 
 func (i *TerraformLSInstaller) Install(ctx context.Context) error {
 	u := fmt.Sprintf("https://github.com/hashicorp/terraform-ls/releases/download/v%[1]s/terraform-ls_%[1]s_%s_%s.zip", i.Version(), runtime.GOOS, runtime.GOARCH)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return err
-	}
-	archive := filepath.Join(i.Dir(), i.Name()+".zip")
-	if err := i.Download(req, archive); err != nil {
-		return err
-	}
-	if err := i.Extract(ctx, archive); err != nil {
-		return err
-	}
-	return nil
+	return i.FetchWithExtract(ctx, u, filepath.Join(i.Dir(), i.Name()+".zip"))
 }
