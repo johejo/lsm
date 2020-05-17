@@ -16,7 +16,8 @@ var _ Installer = (*TerraformLSPInstaller)(nil)
 
 func NewTerraformLSPInstaller(baseDir string) *TerraformLSPInstaller {
 	var i TerraformLSPInstaller
-	return &TerraformLSPInstaller{baseInstaller: newBaseInstaller(filepath.Join(baseDir, i.Name()))}
+	i.baseInstaller = newBaseInstaller(filepath.Join(baseDir, i.Name()))
+	return &i
 }
 
 func (i *TerraformLSPInstaller) BinName() string {

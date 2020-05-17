@@ -54,9 +54,6 @@ func (i *GoInstaller) Install(ctx context.Context) error {
 	if err := i.cmdRun(ctx, "go", "clean", "-modcache"); err != nil {
 		return err
 	}
-	if err := os.RemoveAll(filepath.Join(i.Dir(), "src")); err != nil {
-		return err
-	}
 	return nil
 }
 

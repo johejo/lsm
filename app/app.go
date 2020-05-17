@@ -201,17 +201,17 @@ func (a *App) List(ctx context.Context, style ListStyle) error {
 	}
 	list := make([]languageServer, 0, len(a.installers))
 	for _, i := range a.installers {
-		found := false
+		installed := false
 		for _, d := range dirs {
 			if d.IsDir() && d.Name() == i.Name() {
 				bin := filepath.Join(a.baseDir, i.Name(), i.BinName())
 				info, err := os.Stat(bin)
 				if err != nil {
-					found = false
+					installed = false
 					continue
 				}
 				if isExecutable(info.Mode()) {
-					found = true
+					installed = true
 					break
 				}
 			}
@@ -219,7 +219,7 @@ func (a *App) List(ctx context.Context, style ListStyle) error {
 		list = append(list, languageServer{
 			Name:      i.Name(),
 			Version:   i.Version(),
-			Installed: found,
+			Installed: installed,
 		})
 	}
 	switch style {

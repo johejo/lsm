@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -17,7 +16,8 @@ var _ Installer = (*TerraformLSInstaller)(nil)
 
 func NewTerraformLSInstaller(baseDir string) *TerraformLSInstaller {
 	var i TerraformLSInstaller
-	return &TerraformLSInstaller{baseInstaller: newBaseInstaller(filepath.Join(baseDir, i.Name()))}
+	i.baseInstaller = newBaseInstaller(filepath.Join(baseDir, i.Name()))
+	return &i
 }
 
 func (i *TerraformLSInstaller) BinName() string {
@@ -62,11 +62,6 @@ func (i *TerraformLSInstaller) Supports() []Support {
 }
 
 func (i *TerraformLSInstaller) Install(ctx context.Context) error {
-	switch runtime.GOOS {
-	case windows, linux, darwin:
-	default:
-		return errors.New(runtime.GOOS + " is not supported")
-	}
 	u := fmt.Sprintf("https://github.com/hashicorp/terraform-ls/releases/download/v%[1]s/terraform-ls_%[1]s_%s_%s.zip", i.Version(), runtime.GOOS, runtime.GOARCH)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
