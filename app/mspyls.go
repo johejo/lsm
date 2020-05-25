@@ -99,14 +99,19 @@ func (i *MSPyLSInstaller) downloadNuPkg(ctx context.Context) error {
 }
 
 func (i *MSPyLSInstaller) installDotNet(ctx context.Context) error {
-	var dotNetInstallerURL, _script string
+	var (
+		dotNetInstallerURL, _script string
+		args                        []string
+	)
 	switch runtime.GOOS {
 	case linux, darwin:
 		dotNetInstallerURL = "https://dot.net/v1/dotnet-install.sh"
 		_script = "dotnet-install.sh"
+		args = []string{"--install-dir", filepath.Join(i.Dir(), "dotnet")}
 	case windows:
 		dotNetInstallerURL = "https://dot.net/v1/dotnet-install.ps1"
 		_script = "dotnet-install.ps1"
+		args = []string{"-InstallDir", filepath.Join(i.Dir(), "dotnet")}
 	default:
 		return fmt.Errorf("%s is not supported dotnet install scripts", runtime.GOOS)
 	}
@@ -123,7 +128,7 @@ func (i *MSPyLSInstaller) installDotNet(ctx context.Context) error {
 	if err := os.Chmod(script, 0755); err != nil {
 		return err
 	}
-	if err := i.CmdRun(ctx, script, "-i", filepath.Join(i.Dir(), ".dotnet")); err != nil {
+	if err := i.CmdRun(ctx, script, args...); err != nil {
 		return err
 	}
 	return nil
