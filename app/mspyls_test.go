@@ -1,4 +1,4 @@
-package mspyls
+package app
 
 import (
 	"encoding/xml"
