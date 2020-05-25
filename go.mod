@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/Masterminds/semver/v3 v3.1.0
 	github.com/cheggaaa/pb/v3 v3.0.4
+	github.com/johejo/extratime v0.0.0-20200521150145-0dd847afd29c
 	github.com/mattn/go-colorable v0.1.6
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/olekukonko/tablewriter v0.0.4

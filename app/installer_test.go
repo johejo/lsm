@@ -137,6 +137,13 @@ func TestEclipseJDTLSInstaller(t *testing.T) {
 	h.Run(context.Background(), "eclipse.jdt.ls")
 }
 
+func TestMSPyLSInstaller(t *testing.T) {
+	skipCI(t, true)
+	t.Parallel()
+	h := newInstallerTestHelper(t)
+	h.Run(context.Background(), "microsoft-python-language-server")
+}
+
 func TestVSCodeExtensionInstaller(t *testing.T) {
 	skipCI(t, true)
 	tests := []string{

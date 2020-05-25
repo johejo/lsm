@@ -99,6 +99,7 @@ func New(baseDir string) (*App, error) {
 		"eslint-server":                     NewVSCodeExtensionInstaller(baseDir, "eslint-server", "vscode-eslint", "https://github.com/microsoft/vscode-eslint/releases/download/release%2F2.1.4-next.1/vscode-eslint-2.1.4.vsix"),
 		"reason-language-server":            NewVSCodeExtensionInstaller(baseDir, "reason-language-server", "reason-vscode", "https://github.com/jaredly/reason-language-server/releases/download/1.7.8/reason-vscode-1.7.8.vsix"),
 		"lemminx":                           NewVSCodeExtensionInstaller(baseDir, "lemminx", "vscode-xml", "https://github.com/redhat-developer/vscode-xml/releases/download/0.11.0/redhat.vscode-xml-0.11.0.vsix"),
+		"microsoft-python-language-server":  NewMSPyLSInstaller(baseDir),
 	}
 
 	return &App{
