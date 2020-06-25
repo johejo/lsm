@@ -98,7 +98,7 @@ func (i *baseInstaller) Download(req *http.Request, archive string) error {
 	if resp.StatusCode != http.StatusOK {
 		b, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return err
+			return fmt.Errorf("invalid status %v, err=%v", resp.StatusCode, err)
 		}
 		return fmt.Errorf("invalid status code: %v, body=%v", resp.StatusCode, string(b))
 	}
