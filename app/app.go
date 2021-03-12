@@ -83,7 +83,9 @@ func New(baseDir string) (*App, error) {
 		"metals":                            NewMetalsInstaller(baseDir),
 		"bash-language-server":              NewNpmInstaller(baseDir, "bash-language-server", "bash-language-server"),
 		"dockerfile-language-server-nodejs": NewNpmInstaller(baseDir, "dockerfile-language-server-nodejs", "docker-langserver"),
+		"elm-language-server":               NewNpmInstaller(baseDir, "@elm-tooling/elm-language-server", "elm-language-server"),
 		"graphql-lsp":                       NewNpmInstaller(baseDir, "graphql-language-service-cli", "graphql-lsp"),
+		"intelephense":                      NewNpmInstaller(baseDir, "intelephense", "intelephense"),
 		"purescript-language-server":        NewNpmInstaller(baseDir, "purescript-language-server", "purescript-language-server"),
 		"svelte-language-server":            NewNpmInstaller(baseDir, "svelte-language-server", "svelteserver"),
 		"typescript-language-server":        NewNpmInstaller(baseDir, "typescript-language-server", "typescript-language-server"),
@@ -101,7 +103,9 @@ func New(baseDir string) (*App, error) {
 		"terraform-lsp":                     NewTerraformLSPInstaller(baseDir),
 		"eslint-server":                     NewVSCodeExtensionInstaller(baseDir, "eslint-server", "vscode-eslint", "https://github.com/microsoft/vscode-eslint/releases/download/release%2F2.1.4-next.1/vscode-eslint-2.1.4.vsix"),
 		"lemminx":                           NewVSCodeExtensionInstaller(baseDir, "lemminx", "vscode-xml", "https://github.com/redhat-developer/vscode-xml/releases/download/0.11.0/redhat.vscode-xml-0.11.0.vsix"),
+		"lua-sumneko":                       NewVSCodeExtensionInstaller(baseDir, "lua-language-server", "vscode-lua", "https://github.com/sumneko/vscode-lua/releases/download/v1.17.4/lua-1.17.4.vsix"),
 		"reason-language-server":            NewVSCodeExtensionInstaller(baseDir, "reason-language-server", "reason-vscode", "https://github.com/jaredly/reason-language-server/releases/download/1.7.8/reason-vscode-1.7.8.vsix"),
+		"tailwindcss-intellisense":          NewVSCodeExtensionInstaller(baseDir, "tailwindcss-intellisense", "vscode-tailwindcss", "https://github.com/tailwindlabs/tailwindcss-intellisense/releases/download/v0.5.9/vscode-tailwindcss-0.5.9.vsix"),
 	}
 
 	return &App{
