@@ -4,14 +4,7 @@ go 1.14
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
-	github.com/andybalholm/brotli v1.0.1 // indirect
-	github.com/cheggaaa/pb/v3 v3.0.6
-	github.com/fatih/color v1.10.0 // indirect
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/golang/snappy v0.0.3 // indirect
-	github.com/klauspost/compress v1.11.12 // indirect
-	github.com/klauspost/pgzip v1.2.5 // indirect
-	github.com/magiconair/properties v1.8.4 // indirect
+	github.com/cheggaaa/pb/v3 v3.0.7
 	github.com/mattn/go-colorable v0.1.8
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/mholt/archiver/v3 v3.5.0
